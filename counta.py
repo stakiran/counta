@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+import datetime
 import os
 
 def parse_arguments():
@@ -57,6 +58,11 @@ def get_indent_depth(line):
 
 def remove_indent(line):
     return line.lstrip(' ')
+
+def today_datetimestr():
+    todaydt = datetime.datetime.today()
+    dtstr = todaydt.strftime('%Y/%m/%d %a %H:%M:%S')
+    return dtstr
 
 class Stack:
     def __init__(self, ls=[]):
@@ -304,12 +310,16 @@ class Workspace:
 
 class Counter:
     def __init__(self):
-        self._countelements = []
+        self._count_elements = []
         self._category = ''
+
+    def add_count(self, comment=''):
+        count_element = CountElement(comment)
+        self._count_elements.append(count_element)
 
     @property
     def count(self):
-        return 0
+        return len(self._count_elements)
 
     def get_latest_datetime(self):
         return 0
@@ -318,9 +328,18 @@ class Counter:
         return 0
 
 class CountElement:
-    def __init__(self):
-        self._datetime = ''
-        self._comment = ''
+    def __init__(self, comment='',  datetime=''):
+        self._comment = comment
+
+        self._datetime = datetime
+        if not datetime:
+            self._datetime = today_datetimestr()
+
+    @staticmethod
+    def parse(line):
+        line_without_indent = line.rstrip(' ')
+        datetime, comment = line_without_indent.split(' ', 1)
+        return CountElement(comment, datetime)
 
 class ConditionalCounter(Counter):
     def __init__(self):
