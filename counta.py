@@ -434,6 +434,9 @@ class Counter:
         count_element = CountElement(comment)
         self._count_elements.append(count_element)
 
+    def to_lines(self):
+        return self._root_hline.to_lines()
+
     @property
     def count(self):
         return len(self._count_elements)
