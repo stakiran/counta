@@ -209,6 +209,8 @@ COUNT_MARK = f'{SPACE}{SPACE}'
 
 COUNTA_MARK = '@counta'
 DIRECTIVE_WORKSPACE = ['workspace', 'w']
+DIRECTIVE_COUNTER = ['counter', 'c']
+DIRECTIVE_TAG = ['tag', 't']
 
 def get_directive_hline(root_hline, directive_consts):
     for toplevel_hline in root_hline.children:
@@ -293,9 +295,10 @@ class Workspace:
         if not is_found:
             raise RuntimeError('parse error: No workspace directive.')
 
-        # 単に [countername] の表記を集めればいい。
-        # 走査しやすさのため flat する。
-        # 便宜上、[countername, comment] のことを commenter と呼ぶことにする。
+        # 単に [countername] の表記を集めればいい
+        #  走査しやすさのため flat する
+        #  パースの都合上、comment の有無もここで調べる（count はもうちょっと後）
+        # 便宜上、[countername, comment] のことを commenter と呼ぶことにする
         hlines = HierarchicalLine.flat(root_hline)
         hlines = hlines[1:] # rootは要らないのでカットする
         all_commenters = []
@@ -393,18 +396,43 @@ class Workspace:
 
         return pairs_of_countername_and_comment
 
+def line2tags(line):
+    countamark, directive, tags_by_str = line.split(' ', 2)
+    tags = tags_by_str.split(' ')
+    return tags
+
 class Counter:
-    def __init__(self):
+    def __init__(self, root_hline_with_directive):
+        self._root_hline = root_hline_with_directive
+
+        self._directive_hline = None
+        self._tags = []
+
         self._count_elements = []
-        self._category = ''
+
+    @staticmethod
+    def parse(root_hline):
+        is_found, _ = get_directive_hline(root_hline, DIRECTIVE_COUNTER)
+        if not is_found:
+            lines = [f'{COUNTA_MARK} {DIRECTIVE_COUNTER[0]}', '']
+            directive_hline = HierarchicalLine(lines, indent_depth=0)
+            root_hline.append(directive_hline)
+        return Counter(root_hline)
+
+    def _parse_hline(self):
+        root_hline = self._root_hline
+
+        is_found, directive_hline = get_directive_hline(root_hline, DIRECTIVE_COUNTER)
+        assert(is_found)
+        self._directive_hline = directive_hline
+
+        is_found, tag_hline = get_directive_hline(root_hline, DIRECTIVE_TAG)
+        if is_found:
+            self._tags = line2tags(tag_hline.line)
 
     def add_count(self, comment=''):
         count_element = CountElement(comment)
         self._count_elements.append(count_element)
-
-    @staticmethod
-    def parse(root_hline):
-        return Counter()
 
     @property
     def count(self):
