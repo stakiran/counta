@@ -289,7 +289,7 @@ class Workspace:
         self._counters = []
 
     def parse(self, root_hline):
-        is_found, directive_hline = get_directive_hline(root_hline, DIRECTIVE_WORKSPACE)
+        is_found, _ = get_directive_hline(root_hline, DIRECTIVE_WORKSPACE)
         if not is_found:
             raise RuntimeError('parse error: No workspace directive.')
 
