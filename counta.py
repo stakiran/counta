@@ -204,6 +204,9 @@ class HierarchicalLine:
     def indent_depth(self, indent_depth):
         self._indent_depth = indent_depth
 
+SPACE = ' '
+COUNT_MARK = f'{SPACE}{SPACE}'
+
 COUNTA_MARK = '@counta'
 DIRECTIVE_WORKSPACE = ['workspace', 'w']
 
@@ -220,11 +223,70 @@ def get_directive_hline(root_hline, directive_consts):
         continue
     return False, None
 
+class DataSource:
+    def __init__(self, path_prefix='', path_suffix=''):
+        self._path_prefix = path_prefix
+        self._path_suffix = path_suffix
+
+        self._path_body = ''
+
+    def set_pathbody(self, path_body):
+        self._path_body = path_body
+
+    @property
+    def path_prefix(self):
+        return self._path_prefix
+
+    @property
+    def path_suffix(self):
+        return self._path_suffix
+
+    @property
+    def path_body(self):
+        return self._path_body
+
+    @property
+    def fullpath(self):
+        # 結合方法がデータソース次第かもしれないので i/f にしておく
+        raise NotImplementedError()
+
+    def exists(self):
+        raise NotImplementedError()
+
+    def read_as_lines(self):
+        raise NotImplementedError()
+
+    def write_lines(self, lines):
+        raise NotImplementedError()
+
+class FileSource(DataSource):
+    def __init__(self, path_prefix='', path_suffix=''):
+        super().__init__(path_prefix, path_suffix)
+
+    @property
+    def fullpath(self):
+        fullpath = ''
+        fullpath = os.path.join(self._path_prefix, self._path_body)
+        fullpath = os.path.join(fullpath, self._path_suffix)
+        return fullpath
+
+    def exists(self):
+        return os.path.exists(self.fullpath)
+
+    def read_as_lines(self):
+        lines = file2list(self.fullpath)
+        return lines
+
+    def write_lines(self, lines):
+        list2file(self.fullpath, lines)
+
 class Workspace:
-    def __init__(self):
-        self._counters = []
+    def __init__(self, data_source):
+        self._data_source = data_source
 
         self._commenters = []
+
+        self._counters = []
 
     def parse(self, root_hline):
         is_found, directive_hline = get_directive_hline(root_hline, DIRECTIVE_WORKSPACE)
@@ -243,11 +305,34 @@ class Workspace:
         self._commenters = all_commenters
 
         for commenter in all_commenters:
-            counter = Workspace.commenter2counter(commenter)
+            counter = Workspace.commenter2counter(commenter, self._data_source)
+            self._counters.append(counter)
 
     @staticmethod
-    def commenter2counter(commenter):
-        pass
+    def commenter2counter(commenter, data_source):
+        countername, comment = commenter
+
+        is_count_added = False
+        is_count_added_from_mark = countername.find(COUNT_MARK)!=-1
+        if is_count_added_from_mark:
+            countername = countername.replace(COUNT_MARK, '')
+        is_count_added_from_comment = len(comment)>0
+        is_count_added = is_count_added_from_mark or is_count_added_from_comment
+
+        corrected_countername = get_corrected_filename(countername)
+        data_source.set_pathbody(corrected_countername)
+        if not data_source.exists():
+            default_counterfile_is_empty = ['']
+            data_source.write_lines(default_counterfile_is_empty)
+
+        lines = data_source.read_as_lines()
+        root_hline = HierarchicalLine.parse(lines)
+        counter = Counter.parse(root_hline)
+
+        if is_count_added:
+            counter.add_count(comment)
+
+        return counter
 
     @staticmethod
     def line2pairs_of_countername_and_comment(line):
@@ -317,6 +402,10 @@ class Counter:
         count_element = CountElement(comment)
         self._count_elements.append(count_element)
 
+    @staticmethod
+    def parse(root_hline):
+        return Counter()
+
     @property
     def count(self):
         return len(self._count_elements)
@@ -324,7 +413,7 @@ class Counter:
     def get_latest_datetime(self):
         return 0
 
-    def  get_oldest_datetime(self):
+    def get_oldest_datetime(self):
         return 0
 
 class CountElement:

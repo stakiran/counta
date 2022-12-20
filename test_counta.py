@@ -282,9 +282,27 @@ a
         a = [hlines[7].line, hlines[7].indent_depth]
         self.assertEqual(e, a)
 
+class EmptySource(counta.DataSource):
+    def __init__(self, path_prefix='', path_suffix=''):
+        super().__init__(path_prefix, path_suffix)
+
+    @property
+    def fullpath(self):
+        fullpath = f'{self._path_prefix}{self._path_body}{self._path_suffix}'
+        return fullpath
+
+    def exists(self):
+        return True
+
+    def read_as_lines(self):
+        return []
+
+    def write_lines(self, lines):
+        return
+
 class TestWorkspace(unittest.TestCase):
     def setUp(self):
-        pass
+        self._data_source = EmptySource(path_prefix='', path_suffix='.scb')
 
     def tearDown(self):
         pass
@@ -350,7 +368,7 @@ class TestWorkspace(unittest.TestCase):
         lines = counta.string2lines(scb)
         root_hline = counta.HierarchicalLine.parse(lines)
 
-        workspace = counta.Workspace()
+        workspace = counta.Workspace(self._data_source)
         workspace.parse(root_hline)
 
         a = workspace._commenters
@@ -368,7 +386,7 @@ class TestWorkspace(unittest.TestCase):
 """
         lines = counta.string2lines(scb)
         root_hline = counta.HierarchicalLine.parse(lines)
-        workspace = counta.Workspace()
+        workspace = counta.Workspace(self._data_source)
         with self.assertRaises(RuntimeError):
             workspace.parse(root_hline)
 
@@ -378,7 +396,7 @@ class TestWorkspace(unittest.TestCase):
 """
         lines = counta.string2lines(scb)
         root_hline = counta.HierarchicalLine.parse(lines)
-        workspace = counta.Workspace()
+        workspace = counta.Workspace(self._data_source)
         with self.assertRaises(RuntimeError):
             workspace.parse(root_hline)
 
