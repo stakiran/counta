@@ -182,6 +182,8 @@ class HierarchicalLine:
         self._childlen = []
 
     def append(self, hline):
+        if not isinstance(hline, HierarchicalLine):
+            raise RuntimeError(f'{self} append() must be given an my instance.')
         self._childlen.append(hline)
 
     @property

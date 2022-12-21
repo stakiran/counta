@@ -282,6 +282,18 @@ a
         a = [hlines[7].line, hlines[7].indent_depth]
         self.assertEqual(e, a)
 
+    def test_append_guard(self):
+        scb = 'line'
+        lines = counta.string2lines(scb)
+        root_hline = counta.HierarchicalLine.parse(lines)
+
+        line = 'この行を挿入します'
+        with self.assertRaises(RuntimeError):
+            root_hline.append(line)
+
+        hline = counta.HierarchicalLine(line, indent_depth=0)
+        root_hline.append(hline)
+
 class DebugSource(counta.DataSource):
     def __init__(self, path_prefix='', path_suffix=''):
         super().__init__(path_prefix, path_suffix)
