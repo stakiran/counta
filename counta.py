@@ -414,7 +414,7 @@ class Counter:
         self._directive_hline = None
         self._tags = []
 
-        self._count_elements = []
+        self._parse_hline()
 
     @staticmethod
     def parse(root_hline):
@@ -438,7 +438,8 @@ class Counter:
 
     def add_count(self, comment=''):
         count_element = CountElement(comment)
-        self._count_elements.append(count_element)
+        hline = HierarchicalLine(line=count_element.to_string(), indent_depth=1)
+        self._directive_hline.append(hline)
 
     def to_lines(self):
         return HierarchicalLine.to_lines(self._root_hline)
