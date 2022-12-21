@@ -409,15 +409,6 @@ def line2tags(line):
     return tags
 
 class Counter:
-    def __init__(self, root_hline_with_directive):
-        self._root_hline = root_hline_with_directive
-        self._name = ''
-
-        self._directive_hline = None
-        self._tags = []
-
-        self._parse_hline()
-
     @staticmethod
     def parse(root_hline):
         is_found, _ = get_directive_hline(root_hline, DIRECTIVE_COUNTER)
@@ -426,6 +417,15 @@ class Counter:
             directive_hline = HierarchicalLine(directive_line, indent_depth=0)
             root_hline.append(directive_hline)
         return Counter(root_hline)
+
+    def __init__(self, root_hline_with_directive):
+        self._root_hline = root_hline_with_directive
+        self._name = ''
+
+        self._directive_hline = None
+        self._tags = []
+
+        self._parse_hline()
 
     def _parse_hline(self):
         root_hline = self._root_hline
