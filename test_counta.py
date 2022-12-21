@@ -282,24 +282,6 @@ a
         a = [hlines[7].line, hlines[7].indent_depth]
         self.assertEqual(e, a)
 
-class EmptySource(counta.DataSource):
-    def __init__(self, path_prefix='', path_suffix=''):
-        super().__init__(path_prefix, path_suffix)
-
-    @property
-    def fullpath(self):
-        fullpath = f'{self._path_prefix}{self._path_body}{self._path_suffix}'
-        return fullpath
-
-    def exists(self):
-        return True
-
-    def read_as_lines(self):
-        return []
-
-    def write_lines(self, lines):
-        return
-
 class DebugSource(counta.DataSource):
     def __init__(self, path_prefix='', path_suffix=''):
         super().__init__(path_prefix, path_suffix)
@@ -325,7 +307,7 @@ class DebugSource(counta.DataSource):
 
 class TestWorkspace(unittest.TestCase):
     def setUp(self):
-        self._data_source = EmptySource(path_prefix='', path_suffix='.scb')
+        self._data_source = DebugSource(path_prefix='', path_suffix='.scb')
 
     def tearDown(self):
         pass
@@ -403,6 +385,14 @@ class TestWorkspace(unittest.TestCase):
         f(['食事', ''], a[4])
         f(['床掃除', ''], a[5])
         f(['排水溝掃除', 'キッチンの奥が手強いんだが'], a[6])
+
+        a = workspace.counters
+        e = 7
+        self.assertEqual(e, len(a))
+        self.assertEqual('洗濯', a[0].name)
+        self.assertEqual(['', '@counta counter'], a[0].to_lines())
+        self.assertEqual('郵便局', a[2].name)
+        self.assertEqual(['', '@counta counter', '平日しか空いてないのだるー'], a[2].to_lines())
 
     def test_parse_error(self):
         scb = """[counter1] [counter2]

@@ -290,6 +290,10 @@ class Workspace:
 
         self._counters = []
 
+    @property
+    def counters(self):
+        return self._counters
+
     def parse(self, root_hline):
         is_found, _ = get_directive_hline(root_hline, DIRECTIVE_WORKSPACE)
         if not is_found:
@@ -331,6 +335,7 @@ class Workspace:
         lines = data_source.read_as_lines()
         root_hline = HierarchicalLine.parse(lines)
         counter = Counter.parse(root_hline)
+        counter.name = corrected_countername
 
         if is_count_added:
             counter.add_count(comment)
@@ -404,6 +409,7 @@ def line2tags(line):
 class Counter:
     def __init__(self, root_hline_with_directive):
         self._root_hline = root_hline_with_directive
+        self._name = ''
 
         self._directive_hline = None
         self._tags = []
@@ -414,8 +420,8 @@ class Counter:
     def parse(root_hline):
         is_found, _ = get_directive_hline(root_hline, DIRECTIVE_COUNTER)
         if not is_found:
-            lines = [f'{COUNTA_MARK} {DIRECTIVE_COUNTER[0]}', '']
-            directive_hline = HierarchicalLine(lines, indent_depth=0)
+            directive_line = f'{COUNTA_MARK} {DIRECTIVE_COUNTER[0]}'
+            directive_hline = HierarchicalLine(directive_line, indent_depth=0)
             root_hline.append(directive_hline)
         return Counter(root_hline)
 
@@ -435,7 +441,15 @@ class Counter:
         self._count_elements.append(count_element)
 
     def to_lines(self):
-        return self._root_hline.to_lines()
+        return HierarchicalLine.to_lines(self._root_hline)
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, countername):
+        self._name = countername
 
     @property
     def count(self):
@@ -454,6 +468,12 @@ class CountElement:
         self._datetime = datetime
         if not datetime:
             self._datetime = today_datetimestr()
+
+    def to_string(self):
+        is_no_comment = self._comment==''
+        if is_no_comment:
+            return f'{self._datetime}'
+        return f'{self._datetime} {self._comment}'
 
     @staticmethod
     def parse(line):
