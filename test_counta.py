@@ -300,6 +300,29 @@ class EmptySource(counta.DataSource):
     def write_lines(self, lines):
         return
 
+class DebugSource(counta.DataSource):
+    def __init__(self, path_prefix='', path_suffix=''):
+        super().__init__(path_prefix, path_suffix)
+        self._data = {}
+
+    @property
+    def fullpath(self):
+        fullpath = f'{self._path_prefix}{self._path_body}{self._path_suffix}'
+        return fullpath
+
+    def exists(self):
+        key = self.fullpath
+        return key in self._data
+
+    def read_as_lines(self):
+        key = self.fullpath
+        lines = self._data[key]
+        return lines
+
+    def write_lines(self, lines):
+        key = self.fullpath
+        self._data[key] = lines
+
 class TestWorkspace(unittest.TestCase):
     def setUp(self):
         self._data_source = EmptySource(path_prefix='', path_suffix='.scb')
