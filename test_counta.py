@@ -1,7 +1,16 @@
 # encoding: utf-8
 import unittest
 
+import datetime
+
 import counta
+
+class datetime_FixedToday(datetime.datetime):
+    @classmethod
+    def today(cls):
+        return cls(2020, 4, 1, 12, 34, 56)
+# 普通に today が返るとテストしづらいので無理やり固定文字列にオーバーライドする
+datetime.datetime = datetime_FixedToday
 
 class TestUtil(unittest.TestCase):
     def setUp(self):
@@ -404,7 +413,8 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual('洗濯', a[0].name)
         self.assertEqual(['', '@counta counter'], a[0].to_lines())
         self.assertEqual('郵便局', a[2].name)
-        self.assertEqual(['', '@counta counter', '平日しか空いてないのだるー'], a[2].to_lines())
+        indent1 = ' '
+        self.assertEqual(['', '@counta counter', f'{indent1}{counta.today_datetimestr()} 平日しか空いてないのだるー'], a[2].to_lines())
 
     def test_parse_error(self):
         scb = """[counter1] [counter2]
