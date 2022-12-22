@@ -505,7 +505,28 @@ class CountElement:
     @staticmethod
     def parse(line):
         line_without_indent = line.rstrip(' ')
-        datetime, comment = line_without_indent.split(' ', 1)
+
+        # yyyy/mm/dd dow hh:mm:ss comment
+        # ^^^^^^^^^^^^^^^^^^^^^^^
+        # このフォーマットたぶん変えないので、23文字決め打ちで判定する
+
+        l = len(line_without_indent)
+        elm_l = len(line_without_indent.split(' '))
+        DATETIME_FORMAT_SIZE = 23
+        DATETIME_ELEMENT_COUNT = 3
+        if l<DATETIME_FORMAT_SIZE:
+            raise RuntimeError('parse failed. No datetime field.')
+        if elm_l<DATETIME_ELEMENT_COUNT:
+            raise RuntimeError('parse failed. Maybe invalid format as a datetime.')
+
+        is_no_comment = elm_l<DATETIME_ELEMENT_COUNT
+        if is_no_comment:
+            datetime = line_without_indent
+            comment = ''
+        else:
+            datestr, dow, timestr, comment = line_without_indent.split(' ', DATETIME_ELEMENT_COUNT)
+            datetime = f'{datestr} {dow} {timestr}'
+
         return CountElement(comment, datetime)
 
 class ConditionalCounter(Counter):

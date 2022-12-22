@@ -486,9 +486,9 @@ class TestCount(unittest.TestCase):
         self.assertEqual(2, counter.count)
 
         # なんで合わん？fixed todayが入っている...
-        #ce0 = counter.count_elements_by_object[0]
-        #self.assertEqual('2022/12/31 DOW 23:59:59', ce0.datetime)
-        #self.assertEqual('新年だぁぁぁ！', ce0.comment)
+        ce0 = counter.count_elements_by_object[0]
+        self.assertEqual('2022/12/31 DOW 23:59:59', ce0.datetime)
+        self.assertEqual('新年だぁぁぁ！', ce0.comment)
 
 if __name__ == '__main__':
     unittest.main()
