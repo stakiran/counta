@@ -74,6 +74,18 @@ class TestUtil(unittest.TestCase):
         a = counta.remove_indent('      abc')
         f(e, a)
 
+    def test_validate_datetimestr(self):
+        f = counta.is_valid_datetimestr
+
+        self.assertTrue(f('2022/12/22 thu 16:56:43'))
+        self.assertTrue(f('2022/12/22 Thu 16:56:43'))
+        self.assertTrue(f('2022/12/22 DOW 16:56:43'), 'ちょっと端折ってるので3文字なら何でもいい')
+
+        self.assertFalse(f(''))
+        self.assertFalse(f('2022/12/22 16:56:43'))
+        self.assertFalse(f('2022/12/22 thu 16:56:1'))
+        self.assertFalse(f('2023/02/31 16:56:43'))
+
 class TestHierarchicalLine(unittest.TestCase):
     def setUp(self):
         pass

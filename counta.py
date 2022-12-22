@@ -64,6 +64,25 @@ def today_datetimestr():
     dtstr = todaydt.strftime('%Y/%m/%d %a %H:%M:%S')
     return dtstr
 
+def is_valid_datetimestr(datetimestr):
+    # yyyy/mm/dd dow hh:mm:ss
+
+    try:
+        datestr, dow, timestr = datetimestr.split(' ')
+        y, month, d = [int(elm) for elm in datestr.split('/')]
+        h, minute, s = [int(elm) for elm in timestr.split(':')]
+        datetime.datetime(year=y, month=month, day=d, hour=h, minute=minute, second=s)
+    except:
+        return False
+
+    if len(dow)!=3:
+        return False
+
+    if len(datetimestr)!=len('yyyy/mm/dd dow hh:mm:ss'):
+        return False
+
+    return True
+
 class Stack:
     def __init__(self, ls=[]):
         self._contents = ls
