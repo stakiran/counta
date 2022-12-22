@@ -497,10 +497,31 @@ class TestCount(unittest.TestCase):
 
         self.assertEqual(2, counter.count)
 
-        # なんで合わん？fixed todayが入っている...
         ce0 = counter.count_elements_by_object[0]
         self.assertEqual('2022/12/31 DOW 23:59:59', ce0.datetime)
         self.assertEqual('新年だぁぁぁ！', ce0.comment)
+
+    def test_from_in_case_of_invalid(self):
+        counter = self.generate_counter("""カウンターのてすと
+@counta counter
+ 2022/12/31 DOW 23:59:1 桁が足りません
+""", 'coutername')
+        with self.assertRaises(RuntimeError):
+            counter.count_elements_by_object[0]
+
+        counter = self.generate_counter("""カウンターのてすと
+@counta counter
+ 2022/12/31 23:59:59 曜日がありません
+""", 'coutername')
+        with self.assertRaises(RuntimeError):
+            counter.count_elements_by_object[0]
+
+        counter = self.generate_counter("""カウンターのてすと
+@counta counter
+ 2022/12/31 DOW 25:59:59 無効な日付時刻です
+""", 'coutername')
+        with self.assertRaises(RuntimeError):
+            counter.count_elements_by_object[0]
 
 if __name__ == '__main__':
     unittest.main()
