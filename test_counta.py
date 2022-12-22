@@ -538,5 +538,40 @@ class TestCount(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             counter.count_elements_by_object[0]
 
+    def test_serialize_deserialize(self):
+        counter = self.generate_counter("""aaa
+ bbb
+  ccc
+
+@counta counter
+ 2022/12/22 thu 19:04:12 count1
+ 2022/12/22 thu 19:14:12 count2
+
+ディレクティブはどこに書いてもいいよ
+ hello
+ `print('hello')`
+""", 'coutername')
+
+        counter.add_count()
+        counter.add_count('コメント')
+
+        todaystr = counta.today_datetimestr()
+        expect = f"""aaa
+ bbb
+  ccc
+
+@counta counter
+ 2022/12/22 thu 19:04:12 count1
+ 2022/12/22 thu 19:14:12 count2
+ {todaystr}
+ {todaystr} コメント
+
+ディレクティブはどこに書いてもいいよ
+ hello
+ `print('hello')`
+"""
+        actual = counta.lines2string(counter.to_lines())
+        self.assertEqual(expect, actual)
+
 if __name__ == '__main__':
     unittest.main()
