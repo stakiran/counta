@@ -64,6 +64,8 @@ def today_datetimestr():
     dtstr = todaydt.strftime('%Y/%m/%d %a %H:%M:%S')
     return dtstr
 
+DATETIMESTR_FORMAT = 'yyyy/mm/dd dow hh:mm:ss'
+LENGTH_OF_DATETIMESTR_FORMAT = len(DATETIMESTR_FORMAT)
 def is_valid_datetimestr(datetimestr):
     # yyyy/mm/dd dow hh:mm:ss
 
@@ -78,7 +80,7 @@ def is_valid_datetimestr(datetimestr):
     if len(dow)!=3:
         return False
 
-    if len(datetimestr)!=len('yyyy/mm/dd dow hh:mm:ss'):
+    if len(datetimestr)!=LENGTH_OF_DATETIMESTR_FORMAT:
         return False
 
     return True
