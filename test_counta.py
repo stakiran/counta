@@ -452,7 +452,7 @@ class TestWorkspace(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             workspace.parse(root_hline)
 
-class TestCount(unittest.TestCase):
+class TestCounter(unittest.TestCase):
     def setUp(self):
         pass
 
