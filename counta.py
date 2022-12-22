@@ -527,10 +527,6 @@ class CountElement:
     def parse(line):
         line_without_indent = line.lstrip(' ')
 
-        # yyyy/mm/dd dow hh:mm:ss comment
-        # ^^^^^^^^^^^^^^^^^^^^^^^
-        # このフォーマットたぶん変えないので、23文字決め打ちで判定する
-
         l = len(line_without_indent)
         elm_l = len(line_without_indent.split(' '))
         DATETIME_ELEMENT_COUNT = 3
@@ -544,7 +540,7 @@ class CountElement:
             comment = ''
             datetime = line_without_indent
         else:
-            datestr, dow, timestr, comment = line_without_indent.split(' ', DATETIME_ELEMENT_COUNT+1)
+            datestr, dow, timestr, comment = line_without_indent.split(' ', DATETIME_ELEMENT_COUNT)
             datetime = f'{datestr} {dow} {timestr}'
 
         if not is_valid_datetimestr(datetime):

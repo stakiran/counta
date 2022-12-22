@@ -480,9 +480,7 @@ class TestCount(unittest.TestCase):
         self.assertEqual('テストカウンター1', counter.name)
         self.assertEqual(0, counter.count)
 
-        # add_count で追加した様子もたしかめる
-
-    def test_from_1(self):
+    def test_from_multi(self):
         counter = self.generate_counter("""カウンターのてすと
 てきとうに
  コンテンツを
@@ -500,6 +498,23 @@ class TestCount(unittest.TestCase):
         ce0 = counter.count_elements_by_object[0]
         self.assertEqual('2022/12/31 DOW 23:59:59', ce0.datetime)
         self.assertEqual('新年だぁぁぁ！', ce0.comment)
+
+    def test_adding(self):
+        counter = self.generate_counter("""最初からだけどガンガン足してく
+@counta counter
+""", 'テストカウンター3')
+
+        counter.add_count()
+        counter.add_count()
+        counter.add_count('with comment')
+
+        self.assertEqual(3, counter.count)
+        ce0 = counter.count_elements_by_object[0]
+        self.assertEqual(f'{counta.today_datetimestr()}', ce0.datetime)
+        self.assertEqual('', ce0.comment)
+        ce2 = counter.count_elements_by_object[2]
+        self.assertEqual(f'{counta.today_datetimestr()}', ce2.datetime)
+        self.assertEqual('with comment', ce2.comment)
 
     def test_from_in_case_of_invalid(self):
         counter = self.generate_counter("""カウンターのてすと
