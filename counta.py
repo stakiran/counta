@@ -455,8 +455,24 @@ class Counter:
         self._name = countername
 
     @property
+    def count_elements_by_lines(self):
+        lines = HierarchicalLine.to_lines(self._directive_hline)
+        START_OF_COUNTELEMENT = 1
+        lines = lines[START_OF_COUNTELEMENT:]
+        return lines
+
+    @property
+    def count_elements_by_object(self):
+        lines = self.count_elements_by_lines
+        countelements = []
+        for line in lines:
+            countelement = CountElement.parse(line)
+            countelements.append(countelement)
+        return countelements
+
+    @property
     def count(self):
-        return len(self._count_elements)
+        return len(self.count_elements_by_object)
 
     def get_latest_datetime(self):
         return 0
@@ -477,6 +493,14 @@ class CountElement:
         if is_no_comment:
             return f'{self._datetime}'
         return f'{self._datetime} {self._comment}'
+
+    @property
+    def comment(self):
+        return self._comment
+
+    @property
+    def datetime(self):
+        return self._datetime
 
     @staticmethod
     def parse(line):

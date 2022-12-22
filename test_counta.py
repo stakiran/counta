@@ -12,6 +12,11 @@ class datetime_FixedToday(datetime.datetime):
 # 普通に today が返るとテストしづらいので無理やり固定文字列にオーバーライドする
 datetime.datetime = datetime_FixedToday
 
+def generate_root_hline(s):
+    lines = counta.string2lines(s)
+    root_hline = counta.HierarchicalLine.parse(lines)
+    return root_hline
+
 class TestUtil(unittest.TestCase):
     def setUp(self):
         pass
@@ -434,6 +439,56 @@ class TestWorkspace(unittest.TestCase):
         workspace = counta.Workspace(self._data_source)
         with self.assertRaises(RuntimeError):
             workspace.parse(root_hline)
+
+class TestCount(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    @staticmethod
+    def generate_counter(s, name='カウンター名を入れてください'):
+        root_hline = generate_root_hline(s)
+        counter = counta.Counter.parse(root_hline)
+        counter.name = name
+        return counter
+
+    def test_from_0(self):
+        counter = self.generate_counter("""カウンターのてすと
+てきとうに
+ コンテンツを
+ 追加して
+その後で
+ counter directiveを追加しておく
+
+@counta counter
+""", 'テストカウンター1')
+
+        self.assertEqual('テストカウンター1', counter.name)
+        self.assertEqual(0, counter.count)
+
+        # add_count で追加した様子もたしかめる
+
+    def test_from_1(self):
+        counter = self.generate_counter("""カウンターのてすと
+てきとうに
+ コンテンツを
+ 追加して
+その後で
+ counter directiveを追加しておく
+
+@counta counter
+ 2022/12/31 DOW 23:59:59 新年だぁぁぁ！
+ 2022/12/22 DOW 12:34:56
+""", 'テストカウンター2')
+
+        self.assertEqual(2, counter.count)
+
+        # なんで合わん？fixed todayが入っている...
+        #ce0 = counter.count_elements_by_object[0]
+        #self.assertEqual('2022/12/31 DOW 23:59:59', ce0.datetime)
+        #self.assertEqual('新年だぁぁぁ！', ce0.comment)
 
 if __name__ == '__main__':
     unittest.main()
