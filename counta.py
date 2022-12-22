@@ -546,6 +546,10 @@ class CountElement:
             datestr, dow, timestr, comment = line_without_indent.split(' ', DATETIME_ELEMENT_COUNT+1)
             datetime = f'{datestr} {dow} {timestr}'
 
+        if not is_valid_datetimestr(datetime):
+            raise RuntimeError(f'parse failed. invalid date field. Must be "yyyy/mm/dd dow hh:mm:ss", but actual "{line_without_indent}"')
+
+
         return CountElement(comment=comment, datetime=datetime)
 
 class ConditionalCounter(Counter):
