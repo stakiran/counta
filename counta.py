@@ -533,9 +533,8 @@ class CountElement:
 
         l = len(line_without_indent)
         elm_l = len(line_without_indent.split(' '))
-        DATETIME_FORMAT_SIZE = 23
         DATETIME_ELEMENT_COUNT = 3
-        if l<DATETIME_FORMAT_SIZE:
+        if l<LENGTH_OF_DATETIMESTR_FORMAT:
             raise RuntimeError('parse failed. No datetime field.')
         if elm_l<DATETIME_ELEMENT_COUNT:
             raise RuntimeError('parse failed. Maybe invalid format as a datetime.')
