@@ -584,8 +584,37 @@ class TestCounter(unittest.TestCase):
         e = '2022/12/21 wed 19:04:12'
         a = counter.get_latest_datetime()
         self.assertEqual(e, a)
-
         e = '2022/12/19 mon 19:04:12'
+        a = counter.get_oldest_datetime()
+        self.assertEqual(e, a)
+
+        counter = self.generate_counter("""カウンター
+@counta counter
+ 2022/12/20 tue 19:04:12 い
+ 2022/12/21 wed 19:04:12 あ
+ 2022/12/19 mon 19:04:12 う
+
+ソートしてるのでcount elementの順番がばらばらでも問題ない
+
+""", 'coutername')
+
+        e = '2022/12/21 wed 19:04:12'
+        a = counter.get_latest_datetime()
+        self.assertEqual(e, a)
+        e = '2022/12/19 mon 19:04:12'
+        a = counter.get_oldest_datetime()
+        self.assertEqual(e, a)
+
+        counter = self.generate_counter("""カウンター
+@counta counter
+
+count elementが無い場合でもエラーは出ない
+
+""", 'coutername')
+
+        e = ''
+        a = counter.get_latest_datetime()
+        self.assertEqual(e, a)
         a = counter.get_oldest_datetime()
         self.assertEqual(e, a)
 
