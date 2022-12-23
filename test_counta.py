@@ -573,5 +573,21 @@ class TestCounter(unittest.TestCase):
         actual = counta.lines2string(counter.to_lines())
         self.assertEqual(expect, actual)
 
+    def test_for_sort(self):
+        counter = self.generate_counter("""カウンター
+@counta counter
+ 2022/12/21 wed 19:04:12 あ
+ 2022/12/20 tue 19:04:12 い
+ 2022/12/19 mon 19:04:12 う
+""", 'coutername')
+
+        e = '2022/12/21 wed 19:04:12'
+        a = counter.get_latest_datetime()
+        self.assertEqual(e, a)
+
+        e = '2022/12/19 mon 19:04:12'
+        a = counter.get_oldest_datetime()
+        self.assertEqual(e, a)
+
 if __name__ == '__main__':
     unittest.main()

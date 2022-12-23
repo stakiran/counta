@@ -495,11 +495,23 @@ class Counter:
     def count(self):
         return len(self.count_elements_by_object)
 
-    def get_latest_datetime(self):
-        return 0
+    def _countelements_sorted_by_datetime(self):
+        count_elements = self.count_elements_by_object
+        sorted_count_elements = sorted(count_elements, key=lambda elm:elm.datetime)
+        return sorted_count_elements
 
     def get_oldest_datetime(self):
-        return 0
+        sorted_count_elements = self._countelements_sorted_by_datetime()
+        if len(sorted_count_elements)==0:
+            return ''
+        return sorted_count_elements[0].datetime
+
+    def get_latest_datetime(self):
+        sorted_count_elements = self._countelements_sorted_by_datetime()
+        if len(sorted_count_elements)==0:
+            return ''
+        sorted_count_elements.reverse()
+        return sorted_count_elements[0].datetime
 
 class CountElement:
     def __init__(self, comment='',  datetime=''):
