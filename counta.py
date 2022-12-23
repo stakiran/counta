@@ -345,8 +345,12 @@ class Workspace:
         directive_lines = f'{COUNTA_MARK} {DIRECTIVE_WORKSPACE[0]}'
 
         counters = self._counters
+
         # とりあえず今は date modified 固定
+        # ややこしいが、sortedはasc(昇順)なので、最近順にしたければその逆
         counters = sorted(counters, key=lambda counter: counter.get_latest_datetime())
+        counters.reverse()
+
         counter_line = ''
         for counter in counters:
             margin = ' '
