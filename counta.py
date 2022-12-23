@@ -347,7 +347,9 @@ class Workspace:
         counters = self._counters
 
         # とりあえず今は date modified 固定
-        # ややこしいが、sortedはasc(昇順)なので、最近順にしたければその逆
+        # ややこしいが、
+        #  sortedはasc(昇順)なので、最近順にしたければその逆を取る
+        #  まだカウントがないカウンターは新規に等しいので modified されたとみなす
         counters = sorted(counters, key=lambda counter: counter.get_latest_datetime())
         counters.reverse()
 
