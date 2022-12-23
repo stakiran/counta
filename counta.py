@@ -308,10 +308,11 @@ class FileSource(DataSource):
 class Workspace:
     def __init__(self, data_source):
         self._data_source = data_source
-
-        self._commenters = []
-
+        self._root_hline = None
         self._counters = []
+
+        # for debug
+        self._commenters = []
 
     @property
     def counters(self):
@@ -322,12 +323,14 @@ class Workspace:
         if not is_found:
             raise RuntimeError('parse error: No workspace directive.')
 
+        self._root_hline = root_hline
+
         # 単に [countername] の表記を集めればいい
-        #  走査しやすさのため flat する
+        #  走査しやすさのため flat する（その際、rootは邪魔なので退ける）
         #  パースの都合上、comment の有無もここで調べる（count はもうちょっと後）
         # 便宜上、[countername, comment] のことを commenter と呼ぶことにする
         hlines = HierarchicalLine.flat(root_hline)
-        hlines = hlines[1:] # rootは要らないのでカットする
+        hlines = hlines[1:] 
         all_commenters = []
         for hline in hlines:
             commenters = Workspace.line2pairs_of_countername_and_comment(hline.line)
