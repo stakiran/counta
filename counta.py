@@ -341,6 +341,29 @@ class Workspace:
             counter = Workspace.commenter2counter(commenter, self._data_source)
             self._counters.append(counter)
 
+    def to_lines(self):
+        directive_lines = f'{COUNTA_MARK} {DIRECTIVE_WORKSPACE[0]}'
+
+        counters = self._counters
+        # とりあえず今は date modified 固定
+        counters = sorted(counters, key=lambda counter: counter.get_latest_datetime())
+        counter_line = ''
+        for counter in counters:
+            margin = ' '
+            is_first_loop = counter_line==''
+            if is_first_loop:
+                margin = ''
+            countername_display_text = f'[{counter.name}]'
+            counter_line = f'{counter_line}{margin}{countername_display_text}'
+
+        blankline = ''
+        lines = [
+            counter_line,
+            directive_lines,
+            blankline,
+        ]
+        return lines
+
     @staticmethod
     def commenter2counter(commenter, data_source):
         countername, comment = commenter

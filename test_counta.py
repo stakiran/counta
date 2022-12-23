@@ -452,6 +452,52 @@ class TestWorkspace(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             workspace.parse(root_hline)
 
+    def test_to_lines_onepass(self):
+        counter0 = """まだカウントが無い
+@counta counter
+"""
+        counter1 = """カウントが1つある
+@counta counter
+ 2022/12/24 sat 06:32:59
+"""
+        counterN = """カウントが複数ある
+@counta counter
+ 2022/12/23 sat 06:00:03
+ 2022/12/22 thu 21:13:11
+ 2022/11/09 wed 12:34:56
+"""
+        counter0_convertedname = """まだカウントが無い + ファイル名に変換が走る
+@counta counter
+"""
+        scb = """[まだ存在しないカウンター] [カウンター0] [カウンター1] [カウンターN]
+[カウント0 変換が走る(^_^)/ファイル名]
+@counta workspace
+"""
+
+        self._data_source.set_pathbody('カウンター0') 
+        self._data_source.write_lines(counta.string2lines(counter0))
+        self._data_source.set_pathbody('カウンター1') 
+        self._data_source.write_lines(counta.string2lines(counter1))
+        self._data_source.set_pathbody('カウンターN') 
+        self._data_source.write_lines(counta.string2lines(counterN))
+        self._data_source.set_pathbody(counta.get_corrected_filename('カウント0 変換が走る(^_^)/ファイル名')) 
+        self._data_source.write_lines(counta.string2lines(counter0_convertedname))
+
+        lines = counta.string2lines(scb)
+        root_hline = counta.HierarchicalLine.parse(lines)
+
+        workspace = counta.Workspace(self._data_source)
+        workspace.parse(root_hline)
+
+        lines = workspace.to_lines()
+        for line in lines:
+            print(line)
+        self.assertEqual('@counta workspace', lines[1])
+        e = ''
+        e = f'{e}[まだ存在しないカウンター] [カウンター0] [カウント0_変換が走る(^_^)_ファイル名]'
+        e = f'{e} [カウンター1] [カウンターN]'
+        self.assertEqual(e, lines[0])
+
 class TestCounter(unittest.TestCase):
     def setUp(self):
         pass
