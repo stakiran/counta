@@ -567,6 +567,7 @@ class TestWorkspace(unittest.TestCase):
             if n=='counter0':
                 datetime.datetime = datetime_FixedToday_2025
                 counter.add_count()
+                continue
             if n=='counter1':
                 datetime.datetime = datetime_FixedToday_2024
                 counter.add_count()
