@@ -505,6 +505,7 @@ class TestWorkspace(unittest.TestCase):
 
         count_line = lines[0]
         displayed_counternames = count_line.split(' ')
+        self.assertEqual(6, len(displayed_counternames))
         self.assertEqual('[カウンター1]', displayed_counternames[0])
         self.assertEqual('[カウンターN]', displayed_counternames[1])
 
