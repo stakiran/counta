@@ -463,6 +463,10 @@ class TestWorkspace(unittest.TestCase):
 @counta counter
  2022/12/24 sat 06:32:59
 """
+        counter1_old = """カウントが1つある かなり古い
+@counta counter
+ 2012/08/06 mon 06:01:13
+"""
         counterN = """カウントが複数ある
 @counta counter
  2022/12/23 sat 06:00:03
@@ -481,6 +485,8 @@ class TestWorkspace(unittest.TestCase):
         self._data_source.write_lines(counta.string2lines(counter0))
         self._data_source.set_pathbody('カウンター1') 
         self._data_source.write_lines(counta.string2lines(counter1))
+        self._data_source.set_pathbody('カウンター1_old')
+        self._data_source.write_lines(counta.string2lines(counter1_old))
         self._data_source.set_pathbody('カウンターN') 
         self._data_source.write_lines(counta.string2lines(counterN))
         self._data_source.set_pathbody(counta.get_corrected_filename('カウント0 変換が走る(^_^)/ファイル名')) 
@@ -495,14 +501,8 @@ class TestWorkspace(unittest.TestCase):
         lines = workspace.to_lines()
         self.assertEqual('@counta workspace', lines[1])
 
-        '''
         for line in lines:
             print(line)
-        e = ''
-        e = f'{e}[まだ存在しないカウンター] [カウンター0] [カウント0_変換が走る(^_^)_ファイル名]'
-        e = f'{e} [カウンター1] [カウンターN]'
-        self.assertEqual(e, lines[0])
-        '''
 
 class TestCounter(unittest.TestCase):
     def setUp(self):
