@@ -713,6 +713,7 @@ class TestCounter(unittest.TestCase):
 
         counter.add_count()
 
+        # わかりづらいけど、commenter2counter の default_counterfile_is_empty のところで最初に空行を一つ入れている
         actual = counter.to_lines()
         self.assertEqual(3, len(actual))
         indent1 = ' '
