@@ -543,7 +543,7 @@ class TestWorkspace(unittest.TestCase):
         counter2 = """@counta counter
  2012/08/06 mon 06:01:10
 """
-        scb = """[counter1] [counter2] [counter3]
+        scb = """[counter0] [counter1] [counter2]
 @counta workspace
 """
 
@@ -559,17 +559,18 @@ class TestWorkspace(unittest.TestCase):
         workspace = counta.Workspace(self._data_source)
         workspace.parse(root_hline)
 
+        # 元データのままだと 1, 0, 2 の順になる
+        # add_count() により 0, 1, 2 になるはず
         datetime.datetime = datetime_FixedToday_2023
         for counter in workspace.counters:
             n = counter.name
             if n=='counter0':
-                datetime.datetime = datetime_FixedToday_2023
+                datetime.datetime = datetime_FixedToday_2025
                 counter.add_count()
-                continue
             if n=='counter1':
                 datetime.datetime = datetime_FixedToday_2024
                 counter.add_count()
-                datetime.datetime = datetime_FixedToday_2025
+                datetime.datetime = datetime_FixedToday_2023
                 counter.add_count()
                 continue
 
@@ -580,6 +581,9 @@ class TestWorkspace(unittest.TestCase):
         count_line = lines[0]
         displayed_counternames = count_line.split(' ')
         self.assertEqual(3, len(displayed_counternames))
+        self.assertEqual('[counter0]', displayed_counternames[0])
+        self.assertEqual('[counter1]', displayed_counternames[1])
+        self.assertEqual('[counter2]', displayed_counternames[2])
 
 class TestCounter(unittest.TestCase):
     def setUp(self):
