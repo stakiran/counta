@@ -9,6 +9,18 @@ class datetime_FixedToday(datetime.datetime):
     @classmethod
     def today(cls):
         return cls(2020, 4, 1, 12, 34, 56)
+class datetime_FixedToday_2023(datetime.datetime):
+    @classmethod
+    def today(cls):
+        return cls(2023, 4, 1, 12, 34, 56)
+class datetime_FixedToday_2024(datetime.datetime):
+    @classmethod
+    def today(cls):
+        return cls(2024, 4, 1, 12, 34, 56)
+class datetime_FixedToday_2025(datetime.datetime):
+    @classmethod
+    def today(cls):
+        return cls(2025, 4, 1, 12, 34, 56)
 # 普通に today が返るとテストしづらいので無理やり固定文字列にオーバーライドする
 datetime.datetime = datetime_FixedToday
 
@@ -356,7 +368,7 @@ class TestWorkspace(unittest.TestCase):
         self._data_source = DebugSource(path_prefix='', path_suffix='.scb')
 
     def tearDown(self):
-        pass
+        datetime.datetime = datetime_FixedToday
 
     def test_line2counternames(self):
         f = counta.Workspace.line2pairs_of_countername_and_comment
@@ -521,6 +533,53 @@ class TestWorkspace(unittest.TestCase):
         pass
         # 古くしたカウントは最後になるはず
         self.assertEqual('[カウンター1_old]', displayed_counternames[-1])
+
+    def test_to_lines_after_count(self):
+        counter0 = """@counta counter
+"""
+        counter1 = """@counta counter
+ 2022/12/24 sat 06:32:59
+"""
+        counter2 = """@counta counter
+ 2012/08/06 mon 06:01:10
+"""
+        scb = """[counter1] [counter2] [counter3]
+@counta workspace
+"""
+
+        self._data_source.set_pathbody('counter0') 
+        self._data_source.write_lines(counta.string2lines(counter0))
+        self._data_source.set_pathbody('counter1') 
+        self._data_source.write_lines(counta.string2lines(counter1))
+        self._data_source.set_pathbody('counter2') 
+        self._data_source.write_lines(counta.string2lines(counter2))
+
+        lines = counta.string2lines(scb)
+        root_hline = counta.HierarchicalLine.parse(lines)
+        workspace = counta.Workspace(self._data_source)
+        workspace.parse(root_hline)
+
+        datetime.datetime = datetime_FixedToday_2023
+        for counter in workspace.counters:
+            n = counter.name
+            if n=='counter0':
+                datetime.datetime = datetime_FixedToday_2023
+                counter.add_count()
+                continue
+            if n=='counter1':
+                datetime.datetime = datetime_FixedToday_2024
+                counter.add_count()
+                datetime.datetime = datetime_FixedToday_2025
+                counter.add_count()
+                continue
+
+        lines = workspace.to_lines()
+
+        self.assertEqual('@counta workspace', lines[1])
+
+        count_line = lines[0]
+        displayed_counternames = count_line.split(' ')
+        self.assertEqual(3, len(displayed_counternames))
 
 class TestCounter(unittest.TestCase):
     def setUp(self):
