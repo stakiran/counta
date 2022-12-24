@@ -395,6 +395,10 @@ class Workspace:
         if is_count_added:
             counter.add_count(comment)
 
+        is_no_count = len(counter.count_elements_by_lines)==0
+        if is_no_count:
+            counter.add_count()
+
         return counter
 
     @staticmethod

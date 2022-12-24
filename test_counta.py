@@ -424,14 +424,17 @@ class TestWorkspace(unittest.TestCase):
         f(['床掃除', ''], a[5])
         f(['排水溝掃除', 'キッチンの奥が手強いんだが'], a[6])
 
+        indent1 = ' '
+        today_datestr = counta.today_datetimestr()
+
         a = workspace.counters
         e = 7
         self.assertEqual(e, len(a))
         self.assertEqual('洗濯', a[0].name)
-        self.assertEqual(['', '@counta counter'], a[0].to_lines())
+        self.assertEqual(['', '@counta counter', f'{indent1}{today_datestr}'], a[0].to_lines())
         self.assertEqual('郵便局', a[2].name)
         indent1 = ' '
-        self.assertEqual(['', '@counta counter', f'{indent1}{counta.today_datetimestr()} 平日しか空いてないのだるー'], a[2].to_lines())
+        self.assertEqual(['', '@counta counter', f'{indent1}{today_datestr} 平日しか空いてないのだるー'], a[2].to_lines())
 
     def test_parse_error(self):
         scb = """[counter1] [counter2]
