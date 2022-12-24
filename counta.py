@@ -11,12 +11,21 @@ def parse_arguments():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument('-i', '--input-workspace-file', required=True)
+    default_directory = get_default_directory()
+    parser.add_argument('-i', '--input-workspace-filename', required=True,
+        help='Not path and directory, but filename.')
+    parser.add_argument('-d', '--directory', default=default_directory,
+        help='Base directory(Must be absolute path). if not given then use "(currentdir)/scb"')
 
-    parser.add_argument('-d', '--dryrun',default=False, action='store_true')
+    parser.add_argument('--dryrun',default=False, action='store_true')
 
     args = parser.parse_args()
     return args
+
+def get_default_directory():
+    cwd = os.getcwd()
+    folder = 'scb'
+    return os.path.join(cwd, folder)
 
 def file2list(filepath):
     ret = []
@@ -626,13 +635,15 @@ class EventCounter(ConditionalCounter):
         return False
 
 def main(args):
-    target_workspace_filename = args.input_workspace_file
+    target_workspace_filename = args.input_workspace_filename
+    base_directory = args.directory
 
-    if not os.path.exists(target_workspace_filename):
-        raise RuntimeError(f'Not Found "{target_workspace_filename}".')
-    lines = file2list(target_workspace_filename)
+    target_workspace_fullpath = os.path.join(base_directory, target_workspace_filename)
+    if not os.path.exists(target_workspace_fullpath):
+        raise RuntimeError(f'Not Found "{target_workspace_fullpath}".')
+    lines = file2list(target_workspace_fullpath)
 
-    file_source = FileSource(path_prefix='', path_suffix='.scb')
+    file_source = FileSource(path_prefix=base_directory, path_suffix='.scb')
     root_hline = HierarchicalLine.parse(lines=lines)
     workspace = Workspace(data_source=file_source)
 
