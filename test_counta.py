@@ -343,6 +343,14 @@ class DebugSource(counta.DataSource):
         key = self.fullpath
         self._data[key] = lines
 
+    # 1 実際はファイル名修正が入る
+    # 2 テストでは何もしてないので入らない
+    # 3 が、テストコードは修正が入る前提で書きたい
+    # なのだが、これでは 2 のときに手動で修正を入れないといけない。ハマる。
+    # ハマりたくないので、より現実を模倣し、テスト時にも修正が入るようオーバーライドする。
+    def set_pathbody(self, path_body):
+        self._path_body = counta.get_corrected_filename(path_body)
+
 class TestWorkspace(unittest.TestCase):
     def setUp(self):
         self._data_source = DebugSource(path_prefix='', path_suffix='.scb')
@@ -487,11 +495,11 @@ class TestWorkspace(unittest.TestCase):
         self._data_source.write_lines(counta.string2lines(counter0))
         self._data_source.set_pathbody('カウンター1') 
         self._data_source.write_lines(counta.string2lines(counter1))
-        self._data_source.set_pathbody(counta.get_corrected_filename('カウンター1 old'))
+        self._data_source.set_pathbody('カウンター1 old')
         self._data_source.write_lines(counta.string2lines(counter1_old))
         self._data_source.set_pathbody('カウンターN') 
         self._data_source.write_lines(counta.string2lines(counterN))
-        self._data_source.set_pathbody(counta.get_corrected_filename('カウント0 変換が走る(^_^)/ファイル名')) 
+        self._data_source.set_pathbody('カウント0 変換が走る(^_^)/ファイル名')
         self._data_source.write_lines(counta.string2lines(counter0_convertedname))
 
         lines = counta.string2lines(scb)
