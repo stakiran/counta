@@ -663,7 +663,7 @@ def main(args):
     savee_list = [] # (pathbody, lines)
     for counter in workspace.counters:
         pathbody = counter.name
-        lines = counter.count_elements_by_lines
+        lines = counter.to_lines()
         savee = [pathbody, lines]
         savee_list.append(savee)
     workspace_savee = [args.input_workspace_filename, workspace.to_lines()]
