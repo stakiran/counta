@@ -506,8 +506,12 @@ class TestWorkspace(unittest.TestCase):
         count_line = lines[0]
         displayed_counternames = count_line.split(' ')
         self.assertEqual(6, len(displayed_counternames))
+        # 新しいカウントはその順で並ぶ
         self.assertEqual('[カウンター1]', displayed_counternames[0])
         self.assertEqual('[カウンターN]', displayed_counternames[1])
+        # 新規作成時にカウントされる分は fixed today で見分けがつかないのでテストしない
+        # 古くしたカウントは最後になるはず
+        self.assertEqual('[カウンター1_old]', displayed_counternames[-1])
 
 class TestCounter(unittest.TestCase):
     def setUp(self):
