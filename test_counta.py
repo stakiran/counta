@@ -465,7 +465,7 @@ class TestWorkspace(unittest.TestCase):
 """
         counter1_old = """カウントが1つある かなり古い
 @counta counter
- 2012/08/06 mon 06:01:13
+ 2012/08/06 mon 06:01:10
 """
         counterN = """カウントが複数ある
 @counta counter
@@ -487,7 +487,7 @@ class TestWorkspace(unittest.TestCase):
         self._data_source.write_lines(counta.string2lines(counter0))
         self._data_source.set_pathbody('カウンター1') 
         self._data_source.write_lines(counta.string2lines(counter1))
-        self._data_source.set_pathbody('カウンター1 old')
+        self._data_source.set_pathbody(counta.get_corrected_filename('カウンター1 old'))
         self._data_source.write_lines(counta.string2lines(counter1_old))
         self._data_source.set_pathbody('カウンターN') 
         self._data_source.write_lines(counta.string2lines(counterN))
@@ -499,8 +499,8 @@ class TestWorkspace(unittest.TestCase):
 
         workspace = counta.Workspace(self._data_source)
         workspace.parse(root_hline)
-
         lines = workspace.to_lines()
+
         self.assertEqual('@counta workspace', lines[1])
 
         count_line = lines[0]
@@ -510,6 +510,7 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual('[カウンター1]', displayed_counternames[0])
         self.assertEqual('[カウンターN]', displayed_counternames[1])
         # 新規作成時にカウントされる分は fixed today で見分けがつかないのでテストしない
+        pass
         # 古くしたカウントは最後になるはず
         self.assertEqual('[カウンター1_old]', displayed_counternames[-1])
 
