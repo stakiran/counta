@@ -634,6 +634,17 @@ class EventCounter(ConditionalCounter):
     def is_match(self):
         return False
 
+def debugprint_tolines(file_source, savee_list):
+    for savee in savee_list:
+        pathbody, lines = savee
+        file_source.set_pathbody(pathbody)
+
+        print(f'=== [{pathbody}] ===')
+        print(f'abs:"{file_source.fullpath}"')
+        print('---')
+        for line in lines:
+            print(line)
+
 def main(args):
     target_workspace_filename = args.input_workspace_filename
     base_directory = args.directory
@@ -649,10 +660,18 @@ def main(args):
 
     workspace.parse(root_hline=root_hline)
 
+    savee_list = [] # (pathbody, lines)
+    for counter in workspace.counters:
+        pathbody = counter.name
+        lines = counter.count_elements_by_lines
+        savee = [pathbody, lines]
+        savee_list.append(savee)
+    workspace_savee = [args.input_workspace_filename, workspace.to_lines()]
+    savee_list.append(workspace_savee)
+
     outlines = workspace.to_lines()
     if args.dryrun:
-        for line in outlines:
-            print(line)
+        debugprint_tolines(file_source, savee_list)
         sys.exit(0)
 
     print('not dryrunはまだ')
