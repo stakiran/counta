@@ -707,6 +707,29 @@ class TestCounter(unittest.TestCase):
         actual = counta.lines2string(counter.to_lines())
         self.assertEqual(expect, actual)
 
+    def test_tolines_from_empty_to_added(self):
+        empty = ''
+        counter = self.generate_counter(empty, 'coutername')
+
+        counter.add_count()
+
+        actual = counter.to_lines()
+        self.assertEqual(3, len(actual))
+        indent1 = ' '
+        todaystr = counta.today_datetimestr()
+        self.assertEqual(empty, actual[0])
+        self.assertEqual('@counta counter', actual[1])
+        self.assertEqual(f'{indent1}{todaystr}', actual[2])
+
+    def test_tolines_from_empty_only(self):
+        empty = ''
+        counter = self.generate_counter(empty, 'coutername')
+
+        actual = counter.to_lines()
+        self.assertEqual(2, len(actual))
+        self.assertEqual(empty, actual[0])
+        self.assertEqual('@counta counter', actual[1])
+
     def test_for_sort(self):
         counter = self.generate_counter("""カウンター
 @counta counter
