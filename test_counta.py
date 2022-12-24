@@ -476,7 +476,9 @@ class TestWorkspace(unittest.TestCase):
         counter0_convertedname = """まだカウントが無い + ファイル名に変換が走る
 @counta counter
 """
-        scb = """[まだ存在しないカウンター] [カウンター0] [カウンター1] [カウンターN]
+        scb = """[まだ存在しないカウンター]
+[カウンター0] [カウンター1] [カウンターN]
+[カウンター1 old] 
 [カウント0 変換が走る(^_^)/ファイル名]
 @counta workspace
 """
@@ -485,7 +487,7 @@ class TestWorkspace(unittest.TestCase):
         self._data_source.write_lines(counta.string2lines(counter0))
         self._data_source.set_pathbody('カウンター1') 
         self._data_source.write_lines(counta.string2lines(counter1))
-        self._data_source.set_pathbody('カウンター1_old')
+        self._data_source.set_pathbody('カウンター1 old')
         self._data_source.write_lines(counta.string2lines(counter1_old))
         self._data_source.set_pathbody('カウンターN') 
         self._data_source.write_lines(counta.string2lines(counterN))
@@ -501,8 +503,10 @@ class TestWorkspace(unittest.TestCase):
         lines = workspace.to_lines()
         self.assertEqual('@counta workspace', lines[1])
 
-        for line in lines:
-            print(line)
+        count_line = lines[0]
+        displayed_counternames = count_line.split(' ')
+        self.assertEqual('[カウンター1]', displayed_counternames[0])
+        self.assertEqual('[カウンターN]', displayed_counternames[1])
 
 class TestCounter(unittest.TestCase):
     def setUp(self):
