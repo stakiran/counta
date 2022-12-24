@@ -2,6 +2,7 @@
 
 import datetime
 import os
+import sys
 
 def parse_arguments():
     import argparse
@@ -10,7 +11,9 @@ def parse_arguments():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument('-i', '--input-workspace-file', default=False)
+    parser.add_argument('-i', '--input-workspace-file', required=True)
+
+    parser.add_argument('-d', '--dryrun',default=False, action='store_true')
 
     args = parser.parse_args()
     return args
@@ -292,7 +295,9 @@ class FileSource(DataSource):
     def fullpath(self):
         fullpath = ''
         fullpath = os.path.join(self._path_prefix, self._path_body)
-        fullpath = os.path.join(fullpath, self._path_suffix)
+        # もっぱら拡張子を想定
+        # os.path.join だと delimitor ついちゃうので使わない。
+        fullpath = f'{fullpath}{self._path_suffix}'
         return fullpath
 
     def exists(self):
@@ -620,8 +625,29 @@ class EventCounter(ConditionalCounter):
     def is_match(self):
         return False
 
+def main(args):
+    target_workspace_filename = args.input_workspace_file
+
+    if not os.path.exists(target_workspace_filename):
+        raise RuntimeError(f'Not Found "{target_workspace_filename}".')
+    lines = file2list(target_workspace_filename)
+
+    file_source = FileSource(path_prefix='', path_suffix='.scb')
+    root_hline = HierarchicalLine.parse(lines=lines)
+    workspace = Workspace(data_source=file_source)
+
+    workspace.parse(root_hline=root_hline)
+
+    outlines = workspace.to_lines()
+    if args.dryrun:
+        for line in outlines:
+            print(line)
+        sys.exit(0)
+
+    print('not dryrunはまだ')
+    sys.exit(0)
+    list2file(target_workspace_filename, outlines)
+
 if __name__ == "__main__":
     args = parse_arguments()
-
-    target_workspace_filename = args.input_workspace_file
-    target_workspace_filename = '俺のカウンタ.scb'
+    main(args)
