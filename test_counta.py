@@ -267,10 +267,8 @@ a
         self.assertEqual(e, a)
 
         hline = counta.HierarchicalLine('2022/12/21', indent_depth=1)
-        #hline_routine_directive.children.append(hline)
         hline_routine_directive.append(hline)
         hline = counta.HierarchicalLine('2022/12/18 08:06:45 最近乾燥時の音エグいけど大丈夫？', indent_depth=1)
-        #hline_counter_directive.children.insert(0, hline)
         hline_counter_directive.prepend(hline)
         actual = counta.HierarchicalLine.to_string(root_hline)
         expect = """洗濯
