@@ -219,6 +219,11 @@ class HierarchicalLine:
             raise RuntimeError(f'{self} append() must be given an my instance.')
         self._childlen.append(hline)
 
+    def prepend(self, hline):
+        if not isinstance(hline, HierarchicalLine):
+            raise RuntimeError(f'{self} prepend() must be given an my instance.')
+        self._childlen.insert(0, hline)
+
     @property
     def line(self):
         return self._line
@@ -512,7 +517,9 @@ class Counter:
     def add_count(self, comment=''):
         count_element = CountElement(comment)
         hline = HierarchicalLine(line=count_element.to_string(), indent_depth=1)
+        # 古いカウントが上にあっても仕方ないので、最新が上に来るようにする
         self._directive_hline.append(hline)
+        #self._directive_hline.prepend(0, hline)
 
     def to_lines(self):
         return HierarchicalLine.to_lines(self._root_hline)
