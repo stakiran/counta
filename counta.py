@@ -673,7 +673,9 @@ def main(args):
         lines = counter.to_lines()
         savee = [pathbody, lines]
         savee_list.append(savee)
-    workspace_savee = [args.input_workspace_filename, workspace.to_lines()]
+    # 拡張子は file_source が suffix  としてつけちゃうのでここでは外しとく
+    workspace_basename = get_basename(args.input_workspace_filename)
+    workspace_savee = [workspace_basename, workspace.to_lines()]
     savee_list.append(workspace_savee)
 
     outlines = workspace.to_lines()
