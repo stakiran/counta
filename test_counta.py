@@ -585,6 +585,50 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual('[counter1]', displayed_counternames[1])
         self.assertEqual('[counter2]', displayed_counternames[2])
 
+    def test_add_comment_from_me(self):
+        counter_contents = """@counta counter
+ 2022/12/25 17:34:25
+"""
+        scb = """[counter1]
+[counter2  ] [  counter3] [cou  nter4]
+[counter5]/ [counter6]/comment1 [cou  nter7]/comment2 [cou  nter8]/
+@counta workspace
+"""
+
+        self._data_source.set_pathbody('counter2') 
+        self._data_source.write_lines(counta.string2lines(counter_contents))
+        self._data_source.set_pathbody('counter3') 
+        self._data_source.write_lines(counta.string2lines(counter_contents))
+        self._data_source.set_pathbody('counter4') 
+        self._data_source.write_lines(counta.string2lines(counter_contents))
+        self._data_source.set_pathbody('counter5') 
+        self._data_source.write_lines(counta.string2lines(counter_contents))
+        self._data_source.set_pathbody('counter6') 
+        self._data_source.write_lines(counta.string2lines(counter_contents))
+        self._data_source.set_pathbody('counter7') 
+        self._data_source.write_lines(counta.string2lines(counter_contents))
+        self._data_source.set_pathbody('counter8') 
+        self._data_source.write_lines(counta.string2lines(counter_contents))
+
+        lines = counta.string2lines(scb)
+        root_hline = counta.HierarchicalLine.parse(lines)
+
+        workspace = counta.Workspace(self._data_source)
+        workspace.parse(root_hline)
+
+        c1, c2, c3, c4, c5, c6, c7, c8 = workspace.counters
+        self.assertEqual(1, len(c1.count_elements_by_lines))
+        indent1 = ' '
+        todaystr = counta.today_datetimestr()
+        added_line = f'{indent1}{todaystr}'
+        self.assertEqual(f'{added_line}', c2.count_elements_by_lines[0])
+        self.assertEqual(f'{added_line}', c3.count_elements_by_lines[0])
+        self.assertEqual(f'{added_line}', c4.count_elements_by_lines[0])
+        #self.assertEqual(f'{added_line}', c5.count_elements_by_lines[0])
+        self.assertEqual(f'{added_line} comment1', c6.count_elements_by_lines[0])
+        self.assertEqual(f'{added_line} comment2', c7.count_elements_by_lines[0])
+        self.assertEqual(f'{added_line}', c8.count_elements_by_lines[0])
+
 class TestCounter(unittest.TestCase):
     def setUp(self):
         pass
