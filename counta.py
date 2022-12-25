@@ -649,7 +649,7 @@ class EventCounter(ConditionalCounter):
     def is_match(self):
         return False
 
-def debugprint_tolines(file_source, savee_list):
+def debugprint_lines(file_source, savee_list):
     for savee in savee_list:
         pathbody, lines = savee
         file_source.set_pathbody(pathbody)
@@ -659,6 +659,12 @@ def debugprint_tolines(file_source, savee_list):
         print('---')
         for line in lines:
             print(line)
+
+def save_lines_to_file(file_source, savee_list):
+    for savee in savee_list:
+        pathbody, lines = savee
+        file_source.set_pathbody(pathbody)
+        file_source.write_lines(lines)
 
 def main(args):
     target_workspace_filename = args.input_workspace_filename
@@ -681,19 +687,18 @@ def main(args):
         lines = counter.to_lines()
         savee = [pathbody, lines]
         savee_list.append(savee)
-    # 拡張子は file_source が suffix  としてつけちゃうのでここでは外しとく
+    # 拡張子は file_source が suffix としてつけちゃうのでここでは外しとく
     workspace_basename = get_basename(args.input_workspace_filename)
     workspace_savee = [workspace_basename, workspace.to_lines()]
     savee_list.append(workspace_savee)
 
     outlines = workspace.to_lines()
     if args.dryrun:
-        debugprint_tolines(file_source, savee_list)
+        debugprint_lines(file_source, savee_list)
         sys.exit(0)
 
-    print('not dryrunはまだ')
+    save_lines_to_file(file_source, savee_list)
     sys.exit(0)
-    list2file(target_workspace_filename, outlines)
 
 if __name__ == "__main__":
     args = parse_arguments()
