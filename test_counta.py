@@ -645,10 +645,10 @@ class TestCounter(unittest.TestCase):
         self.assertEqual(3, counter.count)
         ce0 = counter.count_elements_by_object[0]
         self.assertEqual(f'{counta.today_datetimestr()}', ce0.datetime)
-        self.assertEqual('', ce0.comment)
+        self.assertEqual('with comment', ce0.comment)
         ce2 = counter.count_elements_by_object[2]
         self.assertEqual(f'{counta.today_datetimestr()}', ce2.datetime)
-        self.assertEqual('with comment', ce2.comment)
+        self.assertEqual('', ce2.comment)
 
     def test_from_in_case_of_invalid(self):
         counter = self.generate_counter("""カウンターのてすと
@@ -695,10 +695,10 @@ class TestCounter(unittest.TestCase):
   ccc
 
 @counta counter
+ {todaystr} コメント
+ {todaystr}
  2022/12/22 thu 19:04:12 count1
  2022/12/22 thu 19:14:12 count2
- {todaystr}
- {todaystr} コメント
 
 ディレクティブはどこに書いてもいいよ
  hello

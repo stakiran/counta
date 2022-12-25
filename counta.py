@@ -518,8 +518,8 @@ class Counter:
         count_element = CountElement(comment)
         hline = HierarchicalLine(line=count_element.to_string(), indent_depth=1)
         # 古いカウントが上にあっても仕方ないので、最新が上に来るようにする
-        self._directive_hline.append(hline)
-        #self._directive_hline.prepend(0, hline)
+        #self._directive_hline.append(hline)
+        self._directive_hline.prepend(hline)
 
     def to_lines(self):
         return HierarchicalLine.to_lines(self._root_hline)
