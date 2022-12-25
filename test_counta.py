@@ -425,7 +425,7 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual(['ccc', 'comment2'], a[2])
 
     def test_parse_onepass(self):
-        scb = """[洗濯] [シャッフル]/ [郵便局]/平日しか空いてないのだるー [お風呂] [食事] [床掃除] [排水溝掃除]/キッチンの奥が手強いんだが
+        scb = """[洗濯] [シャッフル] [郵便局]/平日しか空いてないのだるー [お風呂] [食事] [床掃除] [排水溝掃除]/キッチンの奥が手強いんだが
 @counta workspace
 """
         lines = counta.string2lines(scb)
@@ -452,8 +452,6 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual(e, len(a))
         self.assertEqual('洗濯', a[0].name)
         self.assertEqual(['', '@counta counter', f'{indent1}{today_datestr}'], a[0].to_lines())
-        self.assertEqual('シャッフル', a[1].name)
-        self.assertEqual(['', '@counta counter', f'{indent1}{today_datestr}'], a[1].to_lines())
         self.assertEqual('郵便局', a[2].name)
         self.assertEqual(['', '@counta counter', f'{indent1}{today_datestr} 平日しか空いてないのだるー'], a[2].to_lines())
 
