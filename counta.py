@@ -324,6 +324,7 @@ class FileSource(DataSource):
     def write_lines(self, lines):
         list2file(self.fullpath, lines)
 
+NO_COMMENT_BODY = '<no comment body>'
 class Workspace:
     def __init__(self, data_source):
         self._data_source = data_source
@@ -400,6 +401,10 @@ class Workspace:
         is_count_added_from_comment = len(comment)>0
         is_count_added = is_count_added_from_mark or is_count_added_from_comment
 
+        # 入れておいたダミーだったらもちろん消す
+        if comment==NO_COMMENT_BODY:
+            comment = ''
+
         corrected_countername = get_corrected_filename(countername)
         data_source.set_pathbody(corrected_countername)
         if not data_source.exists():
@@ -454,6 +459,9 @@ class Workspace:
                     comment = line[start_of_comment:i+1]
                 mode = MODE_OUT_BRACHET
                 INDEX_OF_COMMENT = 1
+                # `/` のみ指定された場合、仕様上コメントとして検出できないのでダミーを入れておく。
+                if len(comment)==0:
+                    comment = NO_COMMENT_BODY
                 pairs_of_countername_and_comment[-1][INDEX_OF_COMMENT] = comment
                 continue
 
