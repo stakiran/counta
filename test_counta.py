@@ -624,7 +624,7 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual(f'{added_line}', c2.count_elements_by_lines[0])
         self.assertEqual(f'{added_line}', c3.count_elements_by_lines[0])
         self.assertEqual(f'{added_line}', c4.count_elements_by_lines[0])
-        #self.assertEqual(f'{added_line}', c5.count_elements_by_lines[0])
+        self.assertEqual(f'{added_line}', c5.count_elements_by_lines[0])
         self.assertEqual(f'{added_line} comment1', c6.count_elements_by_lines[0])
         self.assertEqual(f'{added_line} comment2', c7.count_elements_by_lines[0])
         self.assertEqual(f'{added_line}', c8.count_elements_by_lines[0])
