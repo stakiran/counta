@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "workspace1",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "counta.py",
+            "args": ["-i", "workspace1.scb"],
+            // integratedTerminal
+            "console": "internalConsole",
+            "justMyCode": true
+        }
+    ]
+}
