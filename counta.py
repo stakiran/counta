@@ -694,7 +694,6 @@ def main(args):
     workspace_savee = [workspace_basename, workspace.to_lines()]
     savee_list.append(workspace_savee)
 
-    outlines = workspace.to_lines()
     if args.dryrun:
         debugprint_lines(file_source, savee_list)
         sys.exit(0)
