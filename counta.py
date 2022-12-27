@@ -451,7 +451,7 @@ class Workspace:
                     start_of_comment = i+1
                     continue
             if mode == MODE_IN_COMMENT:
-                is_last_of_comment = c in [' ', '[']
+                is_last_of_comment = c in [' ']
                 is_end = i == len(line)-1
                 if not is_last_of_comment and not is_end:
                     continue

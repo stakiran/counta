@@ -455,6 +455,27 @@ class TestWorkspace(unittest.TestCase):
         self.assertEqual('郵便局', a[2].name)
         self.assertEqual(['', '@counta counter', f'{indent1}{today_datestr} 平日しか空いてないのだるー'], a[2].to_lines())
 
+    def test_parse_comment_with_brackets(self):
+        scb = """[counter1]/普通にコメント [counter2]/コメント中に[ブラケット]あり [counter3]/[ブラケット] [counter4]/aaa[ブラケット] [counter5]/[ブラケット]aaa
+[counter6]/[ブラケット]
+@counta workspace
+"""
+        lines = counta.string2lines(scb)
+        root_hline = counta.HierarchicalLine.parse(lines)
+
+        workspace = counta.Workspace(self._data_source)
+        workspace.parse(root_hline)
+
+        a = workspace._commenters
+        f = self.assertEqual
+        f(6, len(a))
+        f(['counter1', '普通にコメント'], a[0])
+        f(['counter2', 'コメント中に[ブラケット]あり'], a[1])
+        f(['counter3', '[ブラケット]'], a[2])
+        f(['counter4', 'aaa[ブラケット]'], a[3])
+        f(['counter5', '[ブラケット]aaa'], a[4])
+        f(['counter6', '[ブラケット]'], a[5])
+
     def test_parse_error(self):
         scb = """[counter1] [counter2]
 """
