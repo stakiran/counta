@@ -370,7 +370,9 @@ class Workspace:
         # ややこしいが、
         #  sortedはasc(昇順)なので、最近順にしたければその逆を取る
         #  まだカウントがないカウンターは新規に等しいので modified されたとみなす
-        counters = sorted(counters, key=lambda counter: counter.get_latest_datetime())
+        # sortkeyにcounter.nameを含めている理由
+        #  新規されるカウンターがn個ある場合に順序が不定になるため
+        counters = sorted(counters, key=lambda counter: f'{counter.get_latest_datetime()}{counter.name}')
         counters.reverse()
 
         counter_line = ''
