@@ -669,12 +669,10 @@ class Report:
         for k in daykeys:
             counternames = self._daily_counters_per_day[k]
             datestr_with_dow = k
-
-            lines.append(f'{datestr_with_dow}')
-
             count = len(counternames)
             graph = '*'*count
-            lines.append(f'{indent1}{count} {graph}')
+
+            lines.append(f'{datestr_with_dow} {graph}')
 
             line = ''
             for countername in counternames:
