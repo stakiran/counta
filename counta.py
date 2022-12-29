@@ -657,15 +657,54 @@ class Report:
         self._data_source = data_source
         self._workspace = workspace
 
+        self._daily_counters_per_day = {}
+
     def daily_to_lines(self):
-        return []
+        lines = []
+        indent1 = ' '
+
+        daykeys = self._daily_counters_per_day.keys()
+        daykeys.sort()
+        for k in daykeys:
+            counternames = self._daily_counters_per_day[k]
+            datestr_with_dow = k
+
+            lines.append(f'{datestr_with_dow}')
+
+            count = len(counternames)
+            graph = '*'*count
+            lines.append(f'{indent1}{count} {graph}')
+
+            line = ''
+            for countername in counternames:
+                line = f'{line}[{countername}] '
+            line = f'{indent1}{line}'
+            lines.append(line)
+        return lines
 
     def update(self):
         self._update_daily()
     
     def _update_daily(self):
-        counters = self._workspace.counters
+        # {
+        #   "2022/12/29": ["counter1", "counter2"],
+        #  ...
+        # }
+        d = {}
 
+        counters = self._workspace.counters
+        for counter in counters:
+            count_elements = counter.count_elements_by_object
+            for count_element in count_elements:
+                datetimestr = count_element.datetime
+                datestr, dow, timestr = datetimestr.split(' ')
+                k = f'{datestr} {dow}'
+                not_found_yet = not k in d
+                if not_found_yet:
+                    d[k] = []
+                d[k].append(counter.name)
+
+        self._daily_counters_per_day = d
 
 def debugprint_lines(file_source, savee_list):
     for savee in savee_list:
