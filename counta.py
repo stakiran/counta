@@ -249,6 +249,7 @@ COUNT_MARK = f'{SPACE}{SPACE}'
 
 COUNTA_MARK = '@counta'
 DIRECTIVE_WORKSPACE = ['workspace', 'w']
+DIRECTIVE_DAILY_REPORT = ['reportdaily', 'rd']
 DIRECTIVE_COUNTER = ['counter', 'c']
 DIRECTIVE_TAG = ['tag', 't']
 
@@ -650,6 +651,21 @@ class EventCounter(ConditionalCounter):
 
     def is_match(self):
         return False
+
+class Report:
+    def __init__(self, data_source, workspace):
+        self._data_source = data_source
+        self._workspace = workspace
+
+    def daily_to_lines(self):
+        return []
+
+    def update(self):
+        self._update_daily()
+    
+    def _update_daily(self):
+        counters = self._workspace.counters
+
 
 def debugprint_lines(file_source, savee_list):
     for savee in savee_list:
