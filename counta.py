@@ -722,7 +722,7 @@ def save_lines_to_file(file_source, savee_list):
         file_source.set_pathbody(pathbody)
         file_source.write_lines(lines)
 
-def main(args):
+def do_as_workspace(args):
     target_workspace_filename = args.input_workspace_filename
     base_directory = args.directory
 
@@ -754,6 +754,9 @@ def main(args):
 
     save_lines_to_file(file_source, savee_list)
     sys.exit(0)
+
+def main(args):
+    do_as_workspace(args)
 
 if __name__ == "__main__":
     args = parse_arguments()
