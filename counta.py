@@ -665,6 +665,7 @@ class Report:
 
         daykeys = list(self._daily_counters_per_day.keys())
         daykeys.sort()
+        daykeys.reverse()
         for k in daykeys:
             counternames = self._daily_counters_per_day[k]
             datestr_with_dow = k
