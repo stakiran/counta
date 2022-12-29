@@ -663,7 +663,7 @@ class Report:
         lines = []
         indent1 = ' '
 
-        daykeys = self._daily_counters_per_day.keys()
+        daykeys = list(self._daily_counters_per_day.keys())
         daykeys.sort()
         for k in daykeys:
             counternames = self._daily_counters_per_day[k]

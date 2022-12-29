@@ -29,6 +29,10 @@ def generate_root_hline(s):
     root_hline = counta.HierarchicalLine.parse(lines)
     return root_hline
 
+def print_lines(lines):
+    for line in lines:
+        print(line)
+
 class TestUtil(unittest.TestCase):
     def setUp(self):
         pass
@@ -839,6 +843,47 @@ count elementが無い場合でもエラーは出ない
         self.assertEqual(e, a)
         a = counter.get_oldest_datetime()
         self.assertEqual(e, a)
+
+class TestReport(unittest.TestCase):
+    def setUp(self):
+        self._data_source = DebugSource(path_prefix='', path_suffix='.scb')
+
+    def tearDown(self):
+        datetime.datetime = datetime_FixedToday
+
+    def test(self):
+        counter1 = """@counta counter
+ 2022/12/30 fri 08:30:02
+ 2022/12/29 thu 09:10:44
+ 2022/12/28 wed 11:11:11
+"""
+        counter2 = """@counta counter
+ 2022/12/30 fri 06:00:01
+"""
+        counter3 = """@counta counter
+ 2022/12/28 wed 16:12:03
+ 2012/08/06 mon 06:01:10
+"""
+        scb = """[カウンター1] [カウンター2] [カウンター3]
+@counta workspace
+"""
+
+        self._data_source.set_pathbody('カウンター1')
+        self._data_source.write_lines(counta.string2lines(counter1))
+        self._data_source.set_pathbody('カウンター2')
+        self._data_source.write_lines(counta.string2lines(counter2))
+        self._data_source.set_pathbody('カウンター3')
+        self._data_source.write_lines(counta.string2lines(counter3))
+
+        lines = counta.string2lines(scb)
+        root_hline = counta.HierarchicalLine.parse(lines)
+        workspace = counta.Workspace(self._data_source)
+        workspace.parse(root_hline)
+
+        report = counta.Report(self._data_source, workspace)
+        report.update()
+        lines = report.daily_to_lines()
+        print_lines(lines)
 
 if __name__ == '__main__':
     unittest.main()
