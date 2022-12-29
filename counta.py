@@ -17,6 +17,9 @@ def parse_arguments():
     parser.add_argument('-d', '--directory', default=default_directory,
         help='Base directory(Must be absolute path). if not given then use "(currentdir)/scb"')
 
+    parser.add_argument('--mode',default='workspace',
+        help='Use to the following rights: workspace, reportdaily')
+
     parser.add_argument('--dryrun',default=False, action='store_true')
 
     args = parser.parse_args()
@@ -722,6 +725,9 @@ def save_lines_to_file(file_source, savee_list):
         file_source.set_pathbody(pathbody)
         file_source.write_lines(lines)
 
+def do_as_reportdaily(args):
+    sys.exit(0)
+
 def do_as_workspace(args):
     target_workspace_filename = args.input_workspace_filename
     base_directory = args.directory
@@ -756,7 +762,11 @@ def do_as_workspace(args):
     sys.exit(0)
 
 def main(args):
-    do_as_workspace(args)
+    mode = args.mode
+    if mode=='workspace':
+        do_as_workspace(args)
+    if mode=='reportdaily':
+        do_as_reportdaily(args)
 
 if __name__ == "__main__":
     args = parse_arguments()
