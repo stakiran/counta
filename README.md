@@ -72,3 +72,30 @@ double space and comment is also possible. (But OK about comment only.)
 ```
 [掃  除]/モップ初めて使ったけど床掃除快適すぎる
 ```
+
+### How to report
+Use `--report`.
+
+```
+$ python counta.py -d "(your-scb-files-directory)" -i mycounters.scb --report
+```
+
+And the report file will be created. Ex: `mycounter_report.scb`.
+
+### How to update automatically
+Cannot only counta.
+
+For example, Use watchmedo and watch the workspace file.
+
+install:
+
+```
+$ pip install watchdog
+```
+
+use:
+
+```
+$ cd (counta-directory)
+$ watchmedo shell-command -W --recursive --pattern '(your-scb-directory)/(your-workspace-filename).scb' --command 'python counta.py -d (your-scb-directory) -i (your-workspace-filename).scb' (your-scb-directory)
+```
