@@ -12,13 +12,10 @@ def parse_arguments():
     )
 
     default_directory = get_default_directory()
-    parser.add_argument('-i', '--input-target-filename', required=True,
+    parser.add_argument('-i', '--input-workspace-filename', required=True,
         help='Not path and directory, but filename.')
     parser.add_argument('-d', '--directory', default=default_directory,
         help='Base directory(Must be absolute path). if not given then use "(currentdir)/scb"')
-
-    parser.add_argument('--mode',default='workspace',
-        help='Use to the following modes: workspace, reportdaily')
 
     parser.add_argument('--dryrun',default=False, action='store_true')
 
@@ -726,21 +723,10 @@ def save_lines_to_file(file_source, savee_list):
         file_source.write_lines(lines)
 
 def do_as_reportdaily(args):
-    target_report_filename = args.input_target_filename
-    base_directory = args.directory
-
-    target_report_fullpath = os.path.join(base_directory, target_report_filename)
-    if not os.path.exists(target_report_fullpath):
-        raise RuntimeError(f'Not Found "{target_report_fullpath}".')
-    lines = file2list(target_report_fullpath)
-
-    file_source = FileSource(path_prefix=base_directory, path_suffix='.scb')
-    root_hline = HierarchicalLine.parse(lines=lines)
-
     sys.exit(0)
 
 def do_as_workspace(args):
-    target_workspace_filename = args.input_target_filename
+    target_workspace_filename = args.input_workspace_filename
     base_directory = args.directory
 
     target_workspace_fullpath = os.path.join(base_directory, target_workspace_filename)
@@ -761,7 +747,7 @@ def do_as_workspace(args):
         savee = [pathbody, lines]
         savee_list.append(savee)
     # 拡張子は file_source が suffix としてつけちゃうのでここでは外しとく
-    workspace_basename = get_basename(args.input_target_filename)
+    workspace_basename = get_basename(args.input_workspace_filename)
     workspace_savee = [workspace_basename, workspace.to_lines()]
     savee_list.append(workspace_savee)
 
@@ -773,11 +759,9 @@ def do_as_workspace(args):
     sys.exit(0)
 
 def main(args):
-    mode = args.mode
-    if mode=='workspace':
-        do_as_workspace(args)
-    if mode=='reportdaily':
-        do_as_reportdaily(args)
+    # if args.report:
+    #     do_as_report(args)
+    do_as_workspace(args)
 
 if __name__ == "__main__":
     args = parse_arguments()
