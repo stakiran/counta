@@ -669,16 +669,20 @@ class Report:
         daykeys.sort()
         daykeys.reverse()
         for k in daykeys:
-            counternames = self._daily_counters_per_day[k]
+            commenters = self._daily_counters_per_day[k]
             datestr_with_dow = k
-            count = len(counternames)
+            count = len(commenters)
             graph = '*'*count
 
             lines.append(f'{datestr_with_dow} {graph}')
 
             line = ''
-            for countername in counternames:
-                line = f'{line}[{countername}] '
+            for commenter in commenters:
+                countername, comment = commenter
+                if not comment:
+                    line = f'{line}[{countername}] '
+                else:
+                    line = f'{line}[{countername}]/{comment} '
             line = f'{indent1}{line}'
             lines.append(line)
         return lines
@@ -688,7 +692,7 @@ class Report:
     
     def _update_daily(self):
         # {
-        #   "2022/12/29": ["counter1", "counter2"],
+        #   "2022/12/29": [commenter1, commenter2],
         #  ...
         # }
         d = {}
@@ -698,12 +702,14 @@ class Report:
             count_elements = counter.count_elements_by_object
             for count_element in count_elements:
                 datetimestr = count_element.datetime
+                comment = count_element.comment
                 datestr, dow, timestr = datetimestr.split(' ')
                 k = f'{datestr} {dow}'
                 not_found_yet = not k in d
                 if not_found_yet:
                     d[k] = []
-                d[k].append(counter.name)
+                commenter = [counter.name, comment]
+                d[k].append(commenter)
 
         self._daily_counters_per_day = d
 
