@@ -664,6 +664,7 @@ class Report:
     def daily_to_lines(self):
         lines = []
         indent1 = ' '
+        indent2 = '  '
 
         daykeys = list(self._daily_counters_per_day.keys())
         daykeys.sort()
@@ -678,13 +679,20 @@ class Report:
 
             line = ''
             for commenter in commenters:
-                countername, comment = commenter
-                if not comment:
-                    line = f'{line}[{countername}] '
-                else:
-                    line = f'{line}[{countername}]/{comment} '
+                countername, _ = commenter
+                line = f'{line}[{countername}] '
             line = f'{indent1}{line}'
             lines.append(line)
+
+            line = ''
+            line = f'{indent1}Comments'
+            lines.append(line)
+            for commenter in commenters:
+                _, comment = commenter
+                if len(comment)==0:
+                    continue
+                line = f'{indent2}{comment}'
+                lines.append(line)
         return lines
 
     def update(self):
