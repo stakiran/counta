@@ -15,7 +15,10 @@ def parse_arguments():
     parser.add_argument('-i', '--input-workspace-filename', required=True,
         help='Not path and directory, but filename.')
     parser.add_argument('-d', '--directory', default=default_directory,
-        help='Base directory(Must be absolute path). if not given then use "(currentdir)/scb"')
+        help='Base directory(Must be absolute path). if not given then use "(currentdir)/scb".')
+
+    parser.add_argument('-r','--report', default=False, action='store_true',
+        help='If given then output report to "(workspace-name)-report.scb".')
 
     parser.add_argument('--dryrun',default=False, action='store_true')
 
@@ -653,8 +656,7 @@ class EventCounter(ConditionalCounter):
         return False
 
 class Report:
-    def __init__(self, data_source, workspace):
-        self._data_source = data_source
+    def __init__(self, workspace):
         self._workspace = workspace
 
         self._daily_counters_per_day = {}
@@ -722,7 +724,29 @@ def save_lines_to_file(file_source, savee_list):
         file_source.set_pathbody(pathbody)
         file_source.write_lines(lines)
 
-def do_as_reportdaily(args):
+def do_as_report(args):
+    target_workspace_filename = args.input_workspace_filename
+    base_directory = args.directory
+
+    target_workspace_fullpath = os.path.join(base_directory, target_workspace_filename)
+    if not os.path.exists(target_workspace_fullpath):
+        raise RuntimeError(f'Not Found "{target_workspace_fullpath}".')
+    lines = file2list(target_workspace_fullpath)
+
+    file_source = FileSource(path_prefix=base_directory, path_suffix='.scb')
+    root_hline = HierarchicalLine.parse(lines=lines)
+    workspace = Workspace(data_source=file_source)
+
+    workspace.parse(root_hline=root_hline)
+
+    report = Report(workspace)
+    report.update()
+    outlines = report.daily_to_lines()
+
+    target_workspace_basename = get_basename(target_workspace_filename)
+    out_fullpath = os.path.join(base_directory, f'{target_workspace_basename}_report.scb')
+    list2file(out_fullpath, outlines)
+
     sys.exit(0)
 
 def do_as_workspace(args):
@@ -759,8 +783,8 @@ def do_as_workspace(args):
     sys.exit(0)
 
 def main(args):
-    # if args.report:
-    #     do_as_report(args)
+    if args.report:
+         do_as_report(args)
     do_as_workspace(args)
 
 if __name__ == "__main__":

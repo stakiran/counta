@@ -880,7 +880,7 @@ class TestReport(unittest.TestCase):
         workspace = counta.Workspace(self._data_source)
         workspace.parse(root_hline)
 
-        report = counta.Report(self._data_source, workspace)
+        report = counta.Report(workspace)
         report.update()
         lines = report.daily_to_lines()
         print_lines(lines)
