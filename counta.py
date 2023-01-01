@@ -746,7 +746,7 @@ class Report:
             for count_element in count_elements:
                 datetimestr = count_element.datetime
                 comment = count_element.comment
-                datestr, dow, timestr = datetimestr.split(' ')
+                datestr, dow, _ = datetimestr.split(' ')
                 k = f'{datestr} {dow}'
                 not_found_yet = not k in d
                 if not_found_yet:
