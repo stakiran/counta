@@ -856,12 +856,14 @@ class TestReport(unittest.TestCase):
  2022/12/30 fri 08:30:02
  2022/12/29 thu 09:10:44
  2022/12/28 wed 11:11:11
+ 2022/11/24 thu 06:00:03
 """
         counter2 = """@counta counter
  2022/12/30 fri 06:00:01
 """
         counter3 = """@counta counter
  2022/12/28 wed 16:12:03
+ 2022/11/01 tue 22:16:33
  2012/08/06 mon 06:01:10
 """
         scb = """[カウンター1] [カウンター2] [カウンター3]
@@ -882,7 +884,10 @@ class TestReport(unittest.TestCase):
 
         report = counta.Report(workspace)
         report.update()
+
         lines = report.daily_to_lines()
+        print_lines(lines)
+        lines = report.monthly_to_lines()
         print_lines(lines)
 
 if __name__ == '__main__':

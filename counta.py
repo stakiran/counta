@@ -660,6 +660,7 @@ class Report:
         self._workspace = workspace
 
         self._counters_per_day = {}
+        self._counters_per_month = {}
 
     def daily_to_lines(self):
         lines = []
@@ -696,7 +697,40 @@ class Report:
         return lines
 
     def monthly_to_lines(self):
-        return []
+        lines = []
+        indent1 = ' '
+
+        monthkeys = list(self._counters_per_month.keys())
+        monthkeys.sort()
+        monthkeys.reverse()
+        for k in monthkeys:
+            counternames = self._counters_per_month[k]
+            year_and_month = k
+
+            total_count = len(counternames)
+            lines.append(f'{year_and_month} {total_count}')
+
+            counts_per_counter = {}
+            for countername in counternames:
+                not_found = not countername in counts_per_counter
+                if not_found:
+                    counts_per_counter[countername] = 0
+                counts_per_counter[countername] += 1
+            ordered = []
+            for k in counts_per_counter:
+                countername = k
+                count = counts_per_counter[k]
+                elm = [countername, count]
+                ordered.append(elm)
+            ordered.sort(key=lambda elm:elm[1])
+            ordered.reverse()
+
+            for elm in ordered:
+                countername, count = elm
+                line = f'{indent1}{count} [{countername}]'
+                lines.append(line)
+
+        return lines
 
     def update(self):
         self._update_daily()
