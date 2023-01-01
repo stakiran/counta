@@ -695,8 +695,43 @@ class Report:
                 lines.append(line)
         return lines
 
+    def monthly_to_lines(self):
+        lines = []
+        indent1 = ' '
+        indent2 = '  '
+
+        daykeys = list(self._daily_counters_per_day.keys())
+        daykeys.sort()
+        daykeys.reverse()
+        for k in daykeys:
+            commenters = self._daily_counters_per_day[k]
+            datestr_with_dow = k
+            count = len(commenters)
+            graph = '*'*count
+
+            lines.append(f'{datestr_with_dow} {graph}')
+
+            line = ''
+            for commenter in commenters:
+                countername, _ = commenter
+                line = f'{line}[{countername}] '
+            line = f'{indent1}{line}'
+            lines.append(line)
+
+            line = ''
+            line = f'{indent1}Comments'
+            lines.append(line)
+            for commenter in commenters:
+                _, comment = commenter
+                if len(comment)==0:
+                    continue
+                line = f'{indent2}{comment}'
+                lines.append(line)
+        return lines
+
     def update(self):
         self._update_daily()
+        self._update_monthly()
     
     def _update_daily(self):
         # {
@@ -720,6 +755,28 @@ class Report:
                 d[k].append(commenter)
 
         self._daily_counters_per_day = d
+
+    def _update_monthly(self):
+        # {
+        #   "2022/12": [countername, countername],
+        #  ...
+        # }
+        d = {}
+
+        counters = self._workspace.counters
+        for counter in counters:
+            count_elements = counter.count_elements_by_object
+            for count_element in count_elements:
+                datetimestr = count_element.datetime
+                datestr, _, _ = datetimestr.split(' ')
+                year_and_month = '/'.join(datestr.split('/')[:2])
+                k = f'{year_and_month}'
+                not_found_yet = not k in d
+                if not_found_yet:
+                    d[k] = []
+                d[k].append(counter.name)
+
+        self._counters_per_month = d
 
 def debugprint_lines(file_source, savee_list):
     for savee in savee_list:
