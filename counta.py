@@ -659,18 +659,18 @@ class Report:
     def __init__(self, workspace):
         self._workspace = workspace
 
-        self._daily_counters_per_day = {}
+        self._counters_per_day = {}
 
     def daily_to_lines(self):
         lines = []
         indent1 = ' '
         indent2 = '  '
 
-        daykeys = list(self._daily_counters_per_day.keys())
+        daykeys = list(self._counters_per_day.keys())
         daykeys.sort()
         daykeys.reverse()
         for k in daykeys:
-            commenters = self._daily_counters_per_day[k]
+            commenters = self._counters_per_day[k]
             datestr_with_dow = k
             count = len(commenters)
             graph = '*'*count
@@ -696,38 +696,7 @@ class Report:
         return lines
 
     def monthly_to_lines(self):
-        lines = []
-        indent1 = ' '
-        indent2 = '  '
-
-        daykeys = list(self._daily_counters_per_day.keys())
-        daykeys.sort()
-        daykeys.reverse()
-        for k in daykeys:
-            commenters = self._daily_counters_per_day[k]
-            datestr_with_dow = k
-            count = len(commenters)
-            graph = '*'*count
-
-            lines.append(f'{datestr_with_dow} {graph}')
-
-            line = ''
-            for commenter in commenters:
-                countername, _ = commenter
-                line = f'{line}[{countername}] '
-            line = f'{indent1}{line}'
-            lines.append(line)
-
-            line = ''
-            line = f'{indent1}Comments'
-            lines.append(line)
-            for commenter in commenters:
-                _, comment = commenter
-                if len(comment)==0:
-                    continue
-                line = f'{indent2}{comment}'
-                lines.append(line)
-        return lines
+        return []
 
     def update(self):
         self._update_daily()
@@ -754,7 +723,7 @@ class Report:
                 commenter = [counter.name, comment]
                 d[k].append(commenter)
 
-        self._daily_counters_per_day = d
+        self._counters_per_day = d
 
     def _update_monthly(self):
         # {
