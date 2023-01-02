@@ -815,10 +815,14 @@ def do_as_report(args):
 
     report = Report(workspace)
     report.update()
-    outlines = report.daily_to_lines()
 
     target_workspace_basename = get_basename(target_workspace_filename)
+    outlines = report.daily_to_lines()
     out_fullpath = os.path.join(base_directory, f'{target_workspace_basename}_report.scb')
+    list2file(out_fullpath, outlines)
+    outlines = report.monthly_to_lines()
+    target_workspace_basename = get_basename(target_workspace_filename)
+    out_fullpath = os.path.join(base_directory, f'{target_workspace_basename}_report_monhtly.scb')
     list2file(out_fullpath, outlines)
 
     sys.exit(0)
