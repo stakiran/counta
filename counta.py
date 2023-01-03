@@ -822,7 +822,7 @@ def do_as_report(args):
     list2file(out_fullpath, outlines)
     outlines = report.monthly_to_lines()
     target_workspace_basename = get_basename(target_workspace_filename)
-    out_fullpath = os.path.join(base_directory, f'{target_workspace_basename}_report_monhtly.scb')
+    out_fullpath = os.path.join(base_directory, f'{target_workspace_basename}_report_monthly.scb')
     list2file(out_fullpath, outlines)
 
     sys.exit(0)
