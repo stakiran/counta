@@ -671,16 +671,18 @@ class Report:
         daykeys.sort()
         daykeys.reverse()
         for k in daykeys:
-            commenters = self._counters_per_day[k]
+            three_elements = self._counters_per_day[k]
             datestr_with_dow = k
-            count = len(commenters)
+            count = len(three_elements)
             graph = '*'*count
-
             lines.append(f'{datestr_with_dow} {graph}')
 
+            three_elements.sort(key=lambda three_element:three_element[2])
+            three_elements.reverse()
+
             line = ''
-            for commenter in commenters:
-                countername, _ = commenter
+            for three_element in three_elements:
+                countername, _, _ = three_element
                 line = f'{line}[{countername}] '
             line = f'{indent1}{line}'
             lines.append(line)
@@ -688,8 +690,8 @@ class Report:
             line = ''
             line = f'{indent1}Comments'
             lines.append(line)
-            for commenter in commenters:
-                _, comment = commenter
+            for three_element in three_elements:
+                _, comment, _ = three_element
                 if len(comment)==0:
                     continue
                 line = f'{indent2}{comment}'
@@ -737,8 +739,11 @@ class Report:
         self._update_monthly()
     
     def _update_daily(self):
+        # 最初は commenter にしていたが、to lines時に時系列に並べるために datetime も要るので
+        # ちょっと長いけど commenter + datetime の構造にする。
+        #
         # {
-        #   "2022/12/29": [commenter1, commenter2],
+        #   "2022/12/29": [(counter_name, comment, datetime),  (counter_name, comment, datetime)],
         #  ...
         # }
         d = {}
@@ -754,8 +759,8 @@ class Report:
                 not_found_yet = not k in d
                 if not_found_yet:
                     d[k] = []
-                commenter = [counter.name, comment]
-                d[k].append(commenter)
+                elm = [counter.name, comment, datetimestr]
+                d[k].append(elm)
 
         self._counters_per_day = d
 
