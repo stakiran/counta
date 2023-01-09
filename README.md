@@ -99,3 +99,5 @@ use:
 $ cd (counta-directory)
 $ watchmedo shell-command -W --recursive --pattern '(your-scb-directory)/(your-workspace-filename).scb' --command 'python counta.py -d (your-scb-directory) -i (your-workspace-filename).scb' (your-scb-directory)
 ```
+
+On Windows, use not `'` but `"`.
